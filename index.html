@@ -17,11 +17,21 @@
 <body>
   <div id="scatterplot1"></div>
   <div>
-    <input style="width: 3rem" type="number" id="numPoints1" min="1" max="250" value="25"> points
+    <input style="width: 3rem" type="number" id="numPoints1" min="1" max="250" value="40"> points
   </div>
+  
   <br>
+  
   <button id="generate1">Generate Data</button>
   <button id="fit1">Fit Perceptron</button>
-  <span id="slope1"></span>
+
+  <br>
+  <br>
+
+  <div>
+    <span id="slope1">True slope:</span>
+    <br>
+    <span id="slope1Pred">Learned slope:</span>
+  </div>
 </body>
 </html>

@@ -1,4 +1,5 @@
-function generatePoints(n, dim, precision) {
+let precision = 3;
+function generatePoints(n, dim) {
   let points = []
   for (let i = 0; i < n; i++) {
     let p = []
@@ -17,10 +18,10 @@ function generateLabels(points) {
   // Slope modifier
   slope = 1;
   if (Math.random() < 0.5) {
-    slope = (Math.random()+0.01).toFixed(2);
+    slope = (Math.random()+0.01).toFixed(precision);
   }
   else {
-    slope = (4*Math.random()+1).toFixed(2);
+    slope = (4*Math.random()+1).toFixed(precision);
   }
   points.forEach(p => {
     if (p[1] > slope*p[0]) {
@@ -118,7 +119,7 @@ $(function() {
     .enter().append("circle")
       .attr("cx", function (d) { return x(d[0]); } )
       .attr("cy", function (d) { return y(d[1]); } )
-      .attr("r", 2.75)
+      .attr("r", 3.0)
       .style("fill", function(d) {
         if (d[2] == 1) {
           return("#EE5C42");
@@ -139,28 +140,40 @@ $(function() {
 
     // New dots on click
     $("#generate1").click(function() {
-    points = generatePoints($("#numPoints1").val(), 2, 3);
+    points = generatePoints($("#numPoints1").val(), 2);
     generateLabels(points);
     d3.selectAll("circle").remove();
     plot(svg1);
   });
 
-  function animate1(w, index) {
-    let weights = w[index][1];
-    // let idx = w[index][0];
+  function moveLine(w, iteration) {
+    let currWeights = w[iteration][1];
+    let currSlope = -currWeights[0]/currWeights[1];
+    let index = w[iteration][0];
+    
+    $("#slope1Pred").text("Learned slope: " + (currSlope).toFixed(precision) + " Iteration " + (iteration+1) + "/" + w.length);
+
+    d3.select('circle:nth-child('+index+')')
+      .transition()
+        .attr("r", 10)
+      .transition()
+        .attr("r", 3)
+      .end();
+
     svg1.select(".weight1")
       .transition()
         .duration(350)
-        .attr("y2", y(-weights[0]/weights[1]))
+        .attr("y2", y(currSlope))
       .end()
       .then(() => {
-        if (index+1 < w.length) {
-          animate1(w, index+1);
+        if (iteration+1 < w.length) {
+          moveLine(w, iteration+1);
         }
     });
   }
 
   $("#fit1").click(function() {
+    d3.selectAll("circle").attr("color", "black");
     while(true) {
       let [idx, newWeights] = updateWeights(weights, points);
       if (isNaN(idx)) {
@@ -170,6 +183,6 @@ $(function() {
       counts[idx] += 1;
       wList.push([idx, newWeights]);
     }
-    animate1(wList, 0);
+    moveLine(wList, 0);
   });
 });
