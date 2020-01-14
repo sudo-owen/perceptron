@@ -11,27 +11,189 @@
     integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
     crossorigin="anonymous">
   </script>
+
+  <!-- Perceptron / D3 code -->
   <script defer src="./script.js"></script>
+
+  <!-- CSS styles -->
+  <link rel="stylesheet" href="./styles.css">
+
+  <!-- KaTEX stuff -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.0/dist/katex.min.css" integrity="sha384-BdGj8xC2eZkQaxoQ8nSLefg4AV4/AwB3Fj+8SUSo7pnKP6Eoy18liIKTPn9oBYNG" crossorigin="anonymous"></p>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.0/dist/katex.min.js" integrity="sha384-JiKN5O8x9Hhs/UE5cT5AAJqieYlOZbGT3CHws/y97o3ty4R7/O5poG9F3JoiOYw1" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.0/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+    onload="renderMathInElement(document.body);"></script>
   <title>Perceptrons Explained</title>
 </head>
 <body>
-  <div id="scatterplot1"></div>
-  <div>
-    <input style="width: 3rem" type="number" id="numPoints1" min="1" max="250" value="40"> points
-  </div>
-  
-  <br>
-  
-  <button id="generate1">Generate Data</button>
-  <button id="fit1">Fit Perceptron</button>
 
-  <br>
-  <br>
+  <h1>Introduction</h1>
 
-  <div>
-    <span id="slope1">True slope:</span>
+  <p>The perceptron is a well-known machine learning lineary classifier invented in 1958 by Frank Rosenblatt. In the binary classification case, the perceptron is parameterized by a weight vector \(w\) and outputs \(\hat{y_i} = \text{sign}(w \cdot x_i^T)\) depending on if the class is positive (\(+1\)) or negative (\(-1\)). What makes this model interesting is that if the data we are trying to classify are linearly seperable, the perceptron&#39;s learning algorithm will always converge to a set of weights \(w\) which will correctly classify all points.</p>
+  
+  <p>What is the perceptron learning algorithm? Briefly, it consists of 4 steps:</p>
+  
+  <ol>
+  <li>Initialize a set of starting weights \(w_1 = [0...0]\).</li>
+  <li>Run the model on your dataset until you hit the first misclassified point.</li>
+  <li>If a point \((x_t, y_t)\) is misclassified, update the weight \(w_i\) with the following rule: \(w_{i+1} = w_i + y_t(x_t)^T\). In other words, we add (or subtract) the misclassified point&#39;s value to our weights.</li>
+  <li>Go back to step 2 until all points are classified correctly.</li>
+  </ol>
+  
+  <p>To get a feel for what I mean, try out the interactive demo below. You can see the model update its decision boundary for each misclassified point, which flashes briefly.</p>
+  
+  <div class="graph">
+    <div id="scatterplot1"></div>
+    <div>
+      <input style="width: 3rem" type="number" id="numPoints1" min="1" max="250" value="40"> points
+    </div>
+    
     <br>
-    <span id="slope1Pred">Learned slope:</span>
+    
+    <button id="generate1">Generate Data</button>
+    <button id="fit1">Fit Perceptron</button>
+  
+    <br>
+    <br>
+  
+    <div>
+      <span id="slope1">True slope:</span>
+      <br>
+      <span id="slope1Pred">Learned slope:</span>
+    </div>
+
+    <br>
   </div>
+  
+  <h1>Convergence Proof</h1>
+  
+  <p>While the above demo gives some good visual evidence that \(w\) always converges to a line which separates our points, there is also a formal proof that adds some useful insights. For the proof, we&#39;ll consider running our algorithm for \(k\) iterations and then show that \(k\) is upper bounded by a finite value, meaning our algorithm will always return a good \(w\) in finite time.</p>
+  
+  <p>Before we begin, let&#39;s make our assumptions clear:</p>
+  
+  <ol>
+  <li>There exists some optimal \(w^*\)  such that for some \(\epsilon &gt; 0\), \(y_i(w^* \cdot x_i) \ge \epsilon\) for all inputs on the training set. In other words, we assume the points are linearly separable. </li>
+  <li>\(||w^*|| = 1\). Though not strictly necessary, this gives us a unique \(w^*\) and makes the proof simpler.</li>
+  <li>For all \(x_i\) in our dataset \(X\), \(||x_i|| &lt; R\). In other words, this bounds the coordinates of our points.</li>
+  </ol>
+  
+  <h3>Inequality 1</h3>
+  
+  <p>First, let \(w^{k+1}​\) be the set of weights returned by our algorithm after running it for \(k+1​\) iterations.</p>
+  
+  <p>We&#39;ll start by showing that:</p>
+  
+  <p>\(w_{k+1} \cdot (w^*)^T \ge w_k \cdot (w^*)^T + \epsilon\)</p>
+  
+  <p>By definition, if we assume that \(w_{k}\) misclassified \((x_t, y_t)\), we update \(w_{k+1} = w_k + y_t(x_t)^T \)</p>
+  
+  <p>Thus:</p>
+  
+  <p>\(w_{k+1}\cdot (w^*)^T = (w_k + y_t(x_t)^T)\cdot (w^*)^T\) </p>
+  
+  <p>Next, multiplying out the right hand side, we get:</p>
+  
+  <p>\(w_{k+1}\cdot (w^*)^T = w_k \cdot (w^*)^T + y_t(w^* \cdot x_t)\)</p>
+  
+  <p>By assumption 2, we get, as desired:</p>
+  
+  <p>\(w_{k+1}\cdot (w^*)^T \ge w_k \cdot (w^*)^T + \epsilon\) </p>
+  
+  <p>Next, we&#39;ll prove by induction that:</p>
+  
+  <p>\(w^{k+1} \cdot (w^*)^T \ge k\epsilon \)</p>
+  
+  <p>Base case where \(k = 0\):</p>
+  
+  <p>\(w^{0+1} \cdot w^* = 0 \ge 0 * \epsilon = 0\)</p>
+  
+  <p>Inductive step where \(k \to k+1\):</p>
+  
+  <p>From what we proved above, we get:</p>
+  
+  <p>\(w^{k+1} \cdot (w^*)^T \ge w_k \cdot (w^*)^T + \epsilon\)</p>
+  
+  <p>Then, from the inductive hypothesis, we get:</p>
+  
+  <p>\(w^{k+1} \cdot (w^*)^T \ge (k-1)\epsilon + \epsilon\)</p>
+  
+  <p>Which gets us, as desired:</p>
+  
+  <p>\(w^{k+1} \cdot (w^*)^T \ge k\epsilon\)</p>
+  
+  <p>Next, we see that:</p>
+  
+  <p>\(w^{k+1} \cdot (w^*)^T = ||w^{k+1}|| * ||w^*||*cos(w^{k+1}, w^*)\)</p>
+  
+  <p>Because \(cos(x) \le 1\), we see that:</p>
+  
+  <p>\(w^{k+1} \cdot (w^*)^T \le ||w^{k+1}||*||w^*||\)</p>
+  
+  <p>Then, because \(||w^*|| = 1\) by assumption 2, we have that:</p>
+  
+  <p>\(||w^{k+1}|| \ge k\epsilon\)</p>
+  
+  <p>Because all values on both sides are positive, we also get:</p>
+  
+  <p>\(||w^{k+1}||^2 \ge k^2\epsilon^2\)</p>
+  
+  <h3>Inequality 2</h3>
+  
+  <p>First, we notice that:</p>
+  
+  <p>\(||w_{k+1}||^2 = ||w_{k} + y_t (x_t)^T||^2\)</p>
+  
+  <p>Multiplying this out, we get:</p>
+  
+  <p>\(||w_{k+1}||^2 = ||w_k||^2 + 2y_t (w_k \cdot x_t) + ||x_k||^2\)</p>
+  
+  <p>Then, because we updated on point \((x_t, y_t)\), we know that it was classified incorrectly. Thus, \(2y_t(w_k \cdot x_t) &lt; 0\).</p>
+  
+  <p>Thus:</p>
+  
+  <p>\(||w_{k+1}||^2 \le ||w_k||^2 + ||x_k||^2\)</p>
+  
+  <p>Then, by assumption 3, we know that:</p>
+  
+  <p>\(R \ge ||x_k||\)</p>
+  
+  <p>Thus:</p>
+  
+  <p>\(||w_{k+1}||^2 \le ||w_k||^2 + R^2\)</p>
+  
+  <p>Now, we&#39;ll prove by induction that:</p>
+  
+  <p>\(||w_{k+1}||^2 \le kR^2\)</p>
+  
+  <p>Base case, where \(k=0\):</p>
+  
+  <p>\(||w_{0+1}||^2  = 0 \le 0*R^2 = 0\)</p>
+  
+  <p>Inductive step, where \(k \to k+1\):</p>
+  
+  <p>From what we proved above:</p>
+  
+  <p>\(||w_{k+1}||^2 \le ||w_k||^2 + R^2 \)</p>
+  
+  <p>Then, by the inductive hypothesis:</p>
+  
+  <p>\(||w_{k+1}||^2 \le (k-1)R^2 + R^2\)</p>
+  
+  <p>Which gets us, as desired:</p>
+  
+  <p>\(||w_{k+1}||^2 \le kR^2\)</p>
+  
+  <h3>Putting It Together</h3>
+  
+  <p>From Inequalities 1 and 2, we get:</p>
+  
+  <p>\(k^2\epsilon^2 \le ||w_{k+1}||^2 \le kR^2\)</p>
+  
+  <p>Dividing out, we get:</p>
+  
+  <p>\(k \le \frac{R^2}{\epsilon^2}\)</p>
+  
+  <p>Thus, we see that our algorithm will run for no more than \(\frac{R^2}{\epsilon^2}\) iterations.</p>
+  
 </body>
 </html>

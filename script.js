@@ -138,19 +138,11 @@ $(function() {
     .attr('y2',y(0))
     .attr("class", "weight1");
 
-    // New dots on click
-    $("#generate1").click(function() {
-    points = generatePoints($("#numPoints1").val(), 2);
-    generateLabels(points);
-    d3.selectAll("circle").remove();
-    plot(svg1);
-  });
-
   function moveLine(w, iteration) {
     let currWeights = w[iteration][1];
     let currSlope = -currWeights[0]/currWeights[1];
     let index = w[iteration][0];
-    
+
     $("#slope1Pred").text("Learned slope: " + (currSlope).toFixed(precision) + " Iteration " + (iteration+1) + "/" + w.length);
 
     d3.select('circle:nth-child('+index+')')
@@ -172,8 +164,17 @@ $(function() {
     });
   }
 
+  // New dots on click
+  $("#generate1").click(function() {
+    $("#slope1Pred").text("Learned slope: ");
+    points = generatePoints($("#numPoints1").val(), 2);
+    generateLabels(points);
+    d3.selectAll("circle").remove();
+    plot(svg1);
+  });
+
   $("#fit1").click(function() {
-    d3.selectAll("circle").attr("color", "black");
+    weights = [0,0];
     while(true) {
       let [idx, newWeights] = updateWeights(weights, points);
       if (isNaN(idx)) {
