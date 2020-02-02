@@ -1,0 +1,26 @@
+{
+  "name": "perceptron",
+  "version": "1.0.0",
+  "description": "Explaining a perceptron.",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/owenshen24/perceptron.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/owenshen24/perceptron/issues"
+  },
+  "homepage": "https://github.com/owenshen24/perceptron#readme",
+  "devDependencies": {
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
+  }
+}

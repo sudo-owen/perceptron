@@ -154,7 +154,7 @@ $(function() {
 
     svg1.select(".weight1")
       .transition()
-        .duration(350)
+        .duration(300)
         .attr("y2", y(currSlope))
       .end()
       .then(() => {
