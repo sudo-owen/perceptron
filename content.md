@@ -19,7 +19,7 @@ While the above demo gives some good visual evidence that $w$ always converges t
 
 Before we begin, let's make our assumptions clear:
 
-1. There exists some optimal $w^*$  such that for some $\epsilon > 0$, $y_i(w^* \cdot x_i) \ge \epsilon$ for all inputs on the training set. In other words, we assume the points are linearly separable. 
+1. There exists some optimal $w^*$  such that for some $\epsilon > 0$, $y_i(w^* \cdot x_i) \ge \epsilon$ for all inputs on the training set. In other words, we assume the points are linearly separable with a margin of $\epsilon$ (as long as our hyperplane is normalized). 
 2. $||w^*|| = 1$. Though not strictly necessary, this gives us a unique $w^*$ and makes the proof simpler.
 3. For all $x_i$ in our dataset $X$, $||x_i|| < R$. In other words, this bounds the coordinates of our points.
 
@@ -138,4 +138,6 @@ Dividing out, we get:
 
 $k \le \frac{R^2}{\epsilon^2}$
 
-Thus, we see that our algorithm will run for no more than $\frac{R^2}{\epsilon^2}$ iterations.
+Thus, we see that our algorithm will run for no more than $\frac{R^2}{\epsilon^2}$ iterations. 
+
+Note that our convergence proof does not explicity depend on the dimensionality of our data points. Rather, the runtime is bounded mostly by the margin between the closest point and the separating hyperplane. In other words, the difficulty of the problem is bounded by how easily separable the two classes are. Below, you can try adjusting the margin between the two classes to see how increasing/decreasing it changes how fast the perceptron converges.

@@ -13,8 +13,7 @@ $(function() {
   $("#generate1").click(function() {
     g.resetLine(graph1, g1[1], g1[2]);
     
-    let points = m.getPoints($("#numPoints1").val(), 2);
-    let trueSlope = m.separateLabels(points);
+    let [trueSlope, points] = m.getPoints2($("#numPoints1").val());
     $("#slope1").text("True slope: " + trueSlope);
     $("#slope1Pred").text("Learned slope: ");
 

@@ -108,8 +108,7 @@ $(function() {
   $("#generate1").click(function() {
     _graphs_js__WEBPACK_IMPORTED_MODULE_2__["resetLine"](graph1, g1[1], g1[2]);
     
-    let points = _matrix_js__WEBPACK_IMPORTED_MODULE_1__["getPoints"]($("#numPoints1").val(), 2);
-    let trueSlope = _matrix_js__WEBPACK_IMPORTED_MODULE_1__["separateLabels"](points);
+    let [trueSlope, points] = _matrix_js__WEBPACK_IMPORTED_MODULE_1__["getPoints2"]($("#numPoints1").val(), 0.5);
     $("#slope1").text("True slope: " + trueSlope);
     $("#slope1Pred").text("Learned slope: ");
 
@@ -178,6 +177,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "shuffle", function() { return shuffle; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPoints", function() { return getPoints; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "separateLabels", function() { return separateLabels; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPoints2", function() { return getPoints2; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "addV", function() { return addV; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dotV", function() { return dotV; });
 function shuffle(arr) {
@@ -220,6 +220,38 @@ function separateLabels(points) {
     }
   });
   return(slope)
+}
+
+function getPoints2(n, margin = 0.9) {
+  let slope;
+  let points = [];
+  if (Math.random() < 0.5) {
+    slope = (Math.random()+0.1).toFixed(precision);
+  }
+  else {
+    slope = (4*Math.random()+1).toFixed(precision);
+  }
+  // Points above the hyperplane
+  for (let i = 0; i < parseInt(n/2); i++) {
+    let x = Math.random().toFixed(3);
+    if (slope > 1) {
+      x = (Math.random()*(1/slope)).toFixed(3);
+    }
+    let min = (slope*x)*(1/margin);
+    let max = 1-min;
+    let y = (Math.random()*max + min).toFixed(3);
+    points.push([[x, y], 1]);
+  }
+  // Points below the hyperplane
+  for (let i = 0; i < parseInt(n/2); i++) {
+    let x = Math.random().toFixed(3);
+    let min = 0;
+    let max = (slope*x)*margin;
+    let y = (Math.random()*max + min).toFixed(3);
+    points.push([[x, y], -1]);
+  }
+  shuffle(points);
+  return([slope, points]);
 }
 
 // Assumes two lists of same length [n x 1] + [n x 1]
