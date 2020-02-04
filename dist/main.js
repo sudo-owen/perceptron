@@ -97,32 +97,69 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-let perceptron = undefined;
-let g1 = _graphs_js__WEBPACK_IMPORTED_MODULE_2__["createGraph"]("#scatterplot1");
-let graph1 = g1[0];
+let models = [];
+let graphs = [];
+let graphIds = ["#scatterplot1", "#scatterplot2"];
+// Set up d3 references
+for (let id of graphIds) {
+  graphs.push(_graphs_js__WEBPACK_IMPORTED_MODULE_2__["createGraph"](id));
+}
 
 // JQuery onready
 $(function() {
 
   // Generate points for perceptron graph
   $("#generate1").click(function() {
-    _graphs_js__WEBPACK_IMPORTED_MODULE_2__["resetLine"](graph1, g1[1], g1[2]);
-    
-    let [trueSlope, points] = _matrix_js__WEBPACK_IMPORTED_MODULE_1__["getPoints2"]($("#numPoints1").val(), 0.5);
-    $("#slope1").text("True slope: " + trueSlope);
-    $("#slope1Pred").text("Learned slope: ");
-
-    perceptron = new _perceptron_js__WEBPACK_IMPORTED_MODULE_0__["Perceptron"](points);
-    _graphs_js__WEBPACK_IMPORTED_MODULE_2__["scatter"](graph1, points, g1[1], g1[2]);
+    let index = 0;
+    let [graph, x, y] = graphs[index];
+    let n = $("#numPoints1").val();
+    let max = parseInt($("#numPoints1").attr("max"));
+    let min = parseInt($("#numPoints1").attr("min"));
+    if (n <= max && n >= min) {
+      _graphs_js__WEBPACK_IMPORTED_MODULE_2__["resetLine"](graph, x, y);
+      let [trueSlope, points] = _matrix_js__WEBPACK_IMPORTED_MODULE_1__["getPoints"](n);
+      $("#slope1").text("True slope: " + trueSlope);
+      $("#slope1Pred").text("Learned slope: ");
+      models[index] = new _perceptron_js__WEBPACK_IMPORTED_MODULE_0__["Perceptron"](points);;
+      _graphs_js__WEBPACK_IMPORTED_MODULE_2__["scatter"](graph, points, x, y);
+    }
   });
 
   // Fit and create list of weights
   $("#fit1").click(function() {
-    perceptron.train();
-    _graphs_js__WEBPACK_IMPORTED_MODULE_2__["showTraining"](graph1, ".weight1", g1[2], 0, perceptron.weightsList);
+    let index = 0;
+    let [graph, x, y] = graphs[index];
+    models[index].train();
+    _graphs_js__WEBPACK_IMPORTED_MODULE_2__["showTraining"](graph, ".weight1", "#slopePred1", y, 0, models[index].weightsList);
   });
 
+  // Generate points for perceptron graph with margin
+  $("#generate2").click(function() {
+    let index = 1;
+    let [graph, x, y] = graphs[index];
+    let n = $("#numPoints2").val();
+    let max = parseInt($("#numPoints2").attr("max"));
+    let min = parseInt($("#numPoints2").attr("min"));
+    let margin = (100-$("#margin2").val())/100;
+    if (n <= max && n >= min) {
+      _graphs_js__WEBPACK_IMPORTED_MODULE_2__["resetLine"](graph, x, y);
+      let [trueSlope, points] = _matrix_js__WEBPACK_IMPORTED_MODULE_1__["getPoints"](n, margin);
+      $("#slope2").text("True slope: " + trueSlope);
+      $("#slopePred2").text("Learned slope: ");
+      models[index] = new _perceptron_js__WEBPACK_IMPORTED_MODULE_0__["Perceptron"](points);;
+      _graphs_js__WEBPACK_IMPORTED_MODULE_2__["scatter"](graph, points, x, y);
+    }
+  });
+
+  // Fit and create list of weights
+  $("#fit2").click(function() {
+    let index = 1;
+    let [graph, x, y] = graphs[index];
+    models[index].train();
+    _graphs_js__WEBPACK_IMPORTED_MODULE_2__["showTraining"](graph, ".weight1", "#slopePred2", y, 0, models[index].weightsList);
+  });
 });
+
 
 /***/ }),
 /* 1 */
@@ -136,11 +173,12 @@ __webpack_require__.r(__webpack_exports__);
 
 class Perceptron {
   
-  constructor(points) {
+  constructor(points, maxIterations = 1000) {
     this.weights = [0,0];
     this.points = points;
     this.weightsList = [];
     this.pointsList = [];
+    this.maxIterations = maxIterations;
   }
 
   updateWeights() {
@@ -161,6 +199,10 @@ class Perceptron {
   train() {
     while(this.updateWeights()) {
       this.weightsList.push(this.weights);
+      this.maxIterations -= 1;
+      if (this.maxIterations == 0) {
+        break;
+      }
     }
   }
 }
@@ -176,8 +218,6 @@ class Perceptron {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "shuffle", function() { return shuffle; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPoints", function() { return getPoints; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "separateLabels", function() { return separateLabels; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPoints2", function() { return getPoints2; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "addV", function() { return addV; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dotV", function() { return dotV; });
 function shuffle(arr) {
@@ -190,39 +230,7 @@ function shuffle(arr) {
 }
 
 let precision = 3;
-function getPoints(n, dim) {
-  let points = []
-  for (let i = 0; i < n; i++) {
-    let p = []
-      for (let j = 0; j < dim; j++) {
-        p.push(Math.random().toFixed(precision));
-      }
-    points.push([p]);
-    }
-  return(points);
-}
-
-function separateLabels(points) {
-  // Slope modifier
-  let slope = 1;
-  if (Math.random() < 0.5) {
-    slope = (Math.random()+0.01).toFixed(precision);
-  }
-  else {
-    slope = (4*Math.random()+1).toFixed(precision);
-  }
-  points.forEach(p => {
-    if (p[0][1] > slope*p[0][0]) {
-      p.push(1);
-    }
-    else {
-      p.push(-1);
-    }
-  });
-  return(slope)
-}
-
-function getPoints2(n, margin = 0.9) {
+function getPoints(n, margin = 0.95) {
   let slope;
   let points = [];
   if (Math.random() < 0.5) {
@@ -234,12 +242,15 @@ function getPoints2(n, margin = 0.9) {
   // Points above the hyperplane
   for (let i = 0; i < parseInt(n/2); i++) {
     let x = Math.random().toFixed(3);
+    // Ensure that the y-values don't got past [0,1]
+    // we do this by ensuring we only generate x-values in
+    // a valid range.
     if (slope > 1) {
-      x = (Math.random()*(1/slope)).toFixed(3);
+      x = (Math.random()*(1/slope)).toFixed(precision);
     }
     let min = (slope*x)*(1/margin);
     let max = 1-min;
-    let y = (Math.random()*max + min).toFixed(3);
+    let y = (Math.random()*max + min).toFixed(precision);
     points.push([[x, y], 1]);
   }
   // Points below the hyperplane
@@ -247,7 +258,7 @@ function getPoints2(n, margin = 0.9) {
     let x = Math.random().toFixed(3);
     let min = 0;
     let max = (slope*x)*margin;
-    let y = (Math.random()*max + min).toFixed(3);
+    let y = (Math.random()*max + min).toFixed(precision);
     points.push([[x, y], -1]);
   }
   shuffle(points);
@@ -283,8 +294,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scatter", function() { return scatter; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showTraining", function() { return showTraining; });
 let margin = {top: 10, right: 30, bottom: 30, left: 60},
-width = 460 - margin.left - margin.right,
-height = 400 - margin.top - margin.bottom;
+width = 400 - margin.left - margin.right,
+height = 360 - margin.top - margin.bottom;
 
 // Append the svg object to the body of the page
 function createGraph(id) {
@@ -345,18 +356,18 @@ function scatter(chart, points, x, y) {
   });
 }
 
-function showTraining(svg, id, y, i, wList) {
+function showTraining(svg, lineId, slopeText, y, i, wList) {
   let weights = wList[i];
   let slope = -weights[0]/weights[1];
-  $("#slope1Pred").text("Learned slope: " + (slope).toFixed(3) + " Iteration " + (i+1) + "/" + wList.length);
-  svg.select(id)
+  $(slopeText).text("Learned slope: " + (slope).toFixed(3) + " Iteration " + (i+1) + "/" + wList.length);
+  svg.select(lineId)
       .transition()
         .duration(300)
         .attr("y2", y(slope))
       .end()
       .then(() => {
         if (i+1 < wList.length) {
-          showTraining(svg, id, y, i+1, wList);
+          showTraining(svg, lineId, slopeText, y, i+1, wList);
         }
       })
 }

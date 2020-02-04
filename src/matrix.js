@@ -8,39 +8,7 @@ export function shuffle(arr) {
 }
 
 let precision = 3;
-export function getPoints(n, dim) {
-  let points = []
-  for (let i = 0; i < n; i++) {
-    let p = []
-      for (let j = 0; j < dim; j++) {
-        p.push(Math.random().toFixed(precision));
-      }
-    points.push([p]);
-    }
-  return(points);
-}
-
-export function separateLabels(points) {
-  // Slope modifier
-  let slope = 1;
-  if (Math.random() < 0.5) {
-    slope = (Math.random()+0.01).toFixed(precision);
-  }
-  else {
-    slope = (4*Math.random()+1).toFixed(precision);
-  }
-  points.forEach(p => {
-    if (p[0][1] > slope*p[0][0]) {
-      p.push(1);
-    }
-    else {
-      p.push(-1);
-    }
-  });
-  return(slope)
-}
-
-export function getPoints2(n, margin = 0.9) {
+export function getPoints(n, margin = 0.95) {
   let slope;
   let points = [];
   if (Math.random() < 0.5) {
@@ -56,11 +24,11 @@ export function getPoints2(n, margin = 0.9) {
     // we do this by ensuring we only generate x-values in
     // a valid range.
     if (slope > 1) {
-      x = (Math.random()*(1/slope)).toFixed(3);
+      x = (Math.random()*(1/slope)).toFixed(precision);
     }
     let min = (slope*x)*(1/margin);
     let max = 1-min;
-    let y = (Math.random()*max + min).toFixed(3);
+    let y = (Math.random()*max + min).toFixed(precision);
     points.push([[x, y], 1]);
   }
   // Points below the hyperplane
@@ -68,7 +36,7 @@ export function getPoints2(n, margin = 0.9) {
     let x = Math.random().toFixed(3);
     let min = 0;
     let max = (slope*x)*margin;
-    let y = (Math.random()*max + min).toFixed(3);
+    let y = (Math.random()*max + min).toFixed(precision);
     points.push([[x, y], -1]);
   }
   shuffle(points);

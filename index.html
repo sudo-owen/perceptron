@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <!-- D3 -->
   <script defer src="https://d3js.org/d3.v5.min.js"></script>
-  <script
-    defer
-    src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-    crossorigin="anonymous">
-  </script>
+
+  <!-- JQuery -->
+  <script defer src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
 
   <!-- Perceptron / D3 code -->
   <script defer src="dist/main.js"></script>
@@ -44,23 +44,18 @@
   <div class="graph">
     <div id="scatterplot1"></div>
     <div>
-      <input style="width: 3rem" type="number" id="numPoints1" min="1" max="250" value="40"> points
+      <input style="width: 3rem" type="number" id="numPoints1" min="10" max="200" value="40"> points (from 10 to 200)
     </div>
-    
     <br>
-    
     <button id="generate1">Generate Data</button>
     <button id="fit1">Fit Perceptron</button>
-  
     <br>
     <br>
-  
     <div>
       <span id="slope1">True slope:</span>
       <br>
-      <span id="slope1Pred">Learned slope:</span>
+      <span id="slopePred1">Learned slope:</span>
     </div>
-
     <br>
   </div>
   
@@ -193,6 +188,33 @@
   <p>\(k \le \frac{R^2}{\epsilon^2}\)</p>
   
   <p>Thus, we see that our algorithm will run for no more than \(\frac{R^2}{\epsilon^2}\) iterations.</p>
-  
+
+  <h3>On The Margin</h3>
+
+  <p>Note that our convergence proof does not explicity depend on the dimensionality of our data points. Rather, the runtime is bounded mostly by the margin between the closest point and the separating hyperplane.</p>
+    
+  <p>In other words, the difficulty of the problem is bounded by how easily separable the two classes are. Below, you can try adjusting the margin between the two classes to see how increasing/decreasing it changes how fast the perceptron converges.</p>
+
+  <div class="graph">
+    <div id="scatterplot2"></div>
+    <div class="input-holder">
+      <input style="width: 3rem" type="number" id="numPoints2" min="10" max="200" value="40"> points (from 10 to 200)
+    </div>
+    <div class="input-holder">
+      <input style="width: 3rem" type="number" id="margin2" min="0" max="50" value="10"> percent margin (from 0 to 50)
+    </div>
+    <br>
+    <button id="generate2">Generate Data</button>
+    <button id="fit2">Fit Perceptron</button>
+    <br>
+    <br>
+    <div>
+      <span id="slope2">True slope:</span>
+      <br>
+      <span id="slopePred2">Learned slope:</span>
+    </div>
+    <br>
+  </div>
+
 </body>
 </html>

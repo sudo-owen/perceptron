@@ -1,6 +1,6 @@
 let margin = {top: 10, right: 30, bottom: 30, left: 60},
-width = 460 - margin.left - margin.right,
-height = 400 - margin.top - margin.bottom;
+width = 400 - margin.left - margin.right,
+height = 360 - margin.top - margin.bottom;
 
 // Append the svg object to the body of the page
 export function createGraph(id) {
@@ -61,18 +61,18 @@ export function scatter(chart, points, x, y) {
   });
 }
 
-export function showTraining(svg, id, y, i, wList) {
+export function showTraining(svg, lineId, slopeText, y, i, wList) {
   let weights = wList[i];
   let slope = -weights[0]/weights[1];
-  $("#slope1Pred").text("Learned slope: " + (slope).toFixed(3) + " Iteration " + (i+1) + "/" + wList.length);
-  svg.select(id)
+  $(slopeText).text("Learned slope: " + (slope).toFixed(3) + " Iteration " + (i+1) + "/" + wList.length);
+  svg.select(lineId)
       .transition()
         .duration(300)
         .attr("y2", y(slope))
       .end()
       .then(() => {
         if (i+1 < wList.length) {
-          showTraining(svg, id, y, i+1, wList);
+          showTraining(svg, lineId, slopeText, y, i+1, wList);
         }
       })
 }

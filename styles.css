@@ -2,8 +2,8 @@ body {
   max-width: 45rem;
   margin: auto;
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 1.2rem;
-  line-height: 1.7rem;
+  font-size: 1.15rem;
+  line-height: 1.5rem;
 }
 
 .graph {
@@ -11,6 +11,16 @@ body {
 }
 
 h3 {
-  font-size: 2.0rem;
+  font-size: 1.8rem;
   margin-top: 3.5rem;
+}
+input, button {
+  font-size: 1.1rem;
+}
+button {
+  cursor: pointer;
+}
+.input-holder {
+  margin-top: 0.75rem;
+  color: #353535;
 }
