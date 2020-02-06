@@ -8,14 +8,14 @@ export function shuffle(arr) {
 }
 
 let precision = 3;
-export function getPoints(n, margin = 0.95) {
+export function getPoints(n, margin = 0.97) {
   let slope;
   let points = [];
   if (Math.random() < 0.5) {
     slope = (Math.random()+0.1).toFixed(precision);
   }
   else {
-    slope = (4*Math.random()+1).toFixed(precision);
+    slope = (3.5*Math.random()+1).toFixed(precision);
   }
   // Points above the hyperplane
   for (let i = 0; i < parseInt(n/2); i++) {
@@ -39,8 +39,15 @@ export function getPoints(n, margin = 0.95) {
     let y = (Math.random()*max + min).toFixed(precision);
     points.push([[x, y], -1]);
   }
-  shuffle(points);
+  // shuffle(points);
   return([slope, points]);
+}
+
+export function flipLabels(points, fraction) {
+  for (let i = 0; i < parseInt(points.length*fraction); i++) {
+    points[i][1] *= -1;
+  }
+  return(points);
 }
 
 // Assumes two lists of same length [n x 1] + [n x 1]

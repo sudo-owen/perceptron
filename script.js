@@ -152,7 +152,7 @@ $(function() {
         .attr("r", 3)
       .end();
 
-    svg1.select(".weight1")
+    svg1.select(".hyperplane")
       .transition()
         .duration(300)
         .attr("y2", y(currSlope))

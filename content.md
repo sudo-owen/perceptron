@@ -1,8 +1,8 @@
 # Introduction
 
-The perceptron is a well-known machine learning lineary classifier invented in 1958 by Frank Rosenblatt. In the binary classification case, the perceptron is parameterized by a weight vector $w$ and outputs $\hat{y_i} = \text{sign}(w \cdot x_i^T)$ depending on if the class is positive ($+1$) or negative ($-1$). What makes this model interesting is that if the data we are trying to classify are linearly seperable, the perceptron's learning algorithm will always converge to a set of weights $w$ which will correctly classify all points.
+The perceptron is a well-known machine linear classifier invented in 1958 by Frank Rosenblatt. In the binary classification case, the perceptron is parameterized by a weight vector $w$ and outputs $\hat{y_i} = \text{sign}(w \cdot x_i^T)$ depending on if the class is positive ($+1$) or negative ($-1$). What makes this model interesting is that *if* the data we are trying to classify are linearly seperable, then the perceptron learning algorithm will always converge to a set of weights $w$ which will correctly classify all points.
 
-What is the perceptron learning algorithm? Briefly, it consists of 4 steps:
+The perceptron learning algorithm consists of 4 steps:
 
 1. Initialize a set of starting weights $w_1 = [0...0]$.
 2. Run the model on your dataset until you hit the first misclassified point.
@@ -140,4 +140,13 @@ $k \le \frac{R^2}{\epsilon^2}$
 
 Thus, we see that our algorithm will run for no more than $\frac{R^2}{\epsilon^2}$ iterations. 
 
-Note that our convergence proof does not explicity depend on the dimensionality of our data points. Rather, the runtime is bounded mostly by the margin between the closest point and the separating hyperplane. In other words, the difficulty of the problem is bounded by how easily separable the two classes are. Below, you can try adjusting the margin between the two classes to see how increasing/decreasing it changes how fast the perceptron converges.
+### Changing the Margin
+
+Note that our convergence proof does not explicity depend on the dimensionality of our data points. Rather, the runtime is bounded mostly by the margin between the closest point and the separating hyperplane. 
+
+In other words, the difficulty of the problem is bounded by how easily separable the two classes are. Below, you can try adjusting the margin between the two classes to see how increasing/decreasing it changes how fast the perceptron converges.
+
+# The Linearly Unseparable Case
+In the real world, data is never clean; it's noisy, and the linear separability assumption we made is basically never achieved. But, as we saw above, the size of the margin that separates the two classes is what allows the perceptron to converge at all. So the normal perceptron learning algorithm gives us no guarantees on how good it will perform on noisy data. However, there are several modifications to the perceptron algorithm which enable it to do well, even when the data is not linearly separable. Below, we'll explore the Maxover algorithm and the Voted Perceptron.
+
+### Maxover Algorithm

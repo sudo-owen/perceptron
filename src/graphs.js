@@ -38,10 +38,9 @@ export function resetLine(svg, x, y) {
     .attr('y1',y(0))
     .attr('x2',x(1))
     .attr('y2',y(0))
-    .attr("class", "weight1");
+    .attr("class", "hyperplane");
 }
 
-// Add circles
 export function scatter(chart, points, x, y) {
   chart.selectAll("circle").remove();
   chart.append('g')
@@ -64,7 +63,7 @@ export function scatter(chart, points, x, y) {
 export function showTraining(svg, lineId, slopeText, y, i, wList) {
   let weights = wList[i];
   let slope = -weights[0]/weights[1];
-  $(slopeText).text("Learned slope: " + (slope).toFixed(3) + " Iteration " + (i+1) + "/" + wList.length);
+  slopeText.text("Learned slope: " + (slope).toFixed(3) + " Iteration: " + (i+1) + "/" + wList.length);
   svg.select(lineId)
       .transition()
         .duration(300)

@@ -42,21 +42,19 @@
   <p>To get a feel for what I mean, try out the interactive demo below. You can see the model update its decision boundary for each misclassified point, which flashes briefly.</p>
   
   <div class="graph">
-    <div id="scatterplot1"></div>
+    <div id="scatterplot0"></div>
     <div>
-      <input style="width: 3rem" type="number" id="numPoints1" min="10" max="200" value="40"> points (from 10 to 200)
+      <input style="width: 3rem" class="numPoints" type="number" min="10" max="200" value="50"> points (from 10 to 200)
     </div>
     <br>
-    <button id="generate1">Generate Data</button>
-    <button id="fit1">Fit Perceptron</button>
-    <br>
-    <br>
     <div>
-      <span id="slope1">True slope:</span>
+      <span class="trueSlope">True slope:</span>
       <br>
-      <span id="slopePred1">Learned slope:</span>
+      <span class="predSlope">Learned slope:</span>
     </div>
     <br>
+    <button id="generate0">Generate Data</button>
+    <button id="fit0">Fit Perceptron</button>
   </div>
   
   <h1>Convergence Proof</h1>
@@ -189,32 +187,54 @@
   
   <p>Thus, we see that our algorithm will run for no more than \(\frac{R^2}{\epsilon^2}\) iterations.</p>
 
-  <h3>On The Margin</h3>
+  <h3>Changing The Margin</h3>
 
   <p>Note that our convergence proof does not explicity depend on the dimensionality of our data points. Rather, the runtime is bounded mostly by the margin between the closest point and the separating hyperplane.</p>
     
   <p>In other words, the difficulty of the problem is bounded by how easily separable the two classes are. Below, you can try adjusting the margin between the two classes to see how increasing/decreasing it changes how fast the perceptron converges.</p>
 
   <div class="graph">
-    <div id="scatterplot2"></div>
+    <div id="scatterplot1"></div>
     <div class="input-holder">
-      <input style="width: 3rem" type="number" id="numPoints2" min="10" max="200" value="40"> points (from 10 to 200)
+      <input style="width: 3rem" class="numPoints" type="number" min="10" max="200" value="50"> points (from 10 to 200)
     </div>
     <div class="input-holder">
-      <input style="width: 3rem" type="number" id="margin2" min="0" max="50" value="10"> percent margin (from 0 to 50)
+      <input style="width: 3rem" class="margin" type="number" min="0" max="50" value="10"> percent margin (from 0 to 50)
     </div>
-    <br>
-    <button id="generate2">Generate Data</button>
-    <button id="fit2">Fit Perceptron</button>
-    <br>
     <br>
     <div>
-      <span id="slope2">True slope:</span>
+      <span class="trueSlope">True slope:</span>
       <br>
-      <span id="slopePred2">Learned slope:</span>
+      <span class="predSlope">Learned slope:</span>
     </div>
     <br>
+    <button id="generate1">Generate Data</button>
+    <button id="fit1">Fit Perceptron</button>
   </div>
+
+  <div>STUFF GOES HERE</div>
+
+  <div class = "graph">
+    <div id="scatterplot3"></div>
+    <div class="input-holder">
+      <input style="width: 3rem" type="number" id="numPoints3" min="10" max="200" value="50"> points (from 10 to 200)
+    </div>
+    <div class="input-holder">
+      <input style="width: 3rem" type="number" id="iter3" min="1" max="10" value="1"> iterations (from 1 to 10)
+    </div>
+    <div class="input-holder">
+      <input style="width: 3rem" type="number" id="noise3" min="0" max="40" value="10"> percent noise (from 0 to 40)
+    </div>
+    <br>
+    <div>
+      <span id="slope3">True slope:</span>
+      <br>
+      <span id="slopePred3">Learned slope:</span>
+    </div>
+    <br>
+    <button id="generate3">Generate Data</button>
+    <button id="fit3">Fit Perceptron</button>
+  </div>  
 
 </body>
 </html>

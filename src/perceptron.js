@@ -6,7 +6,7 @@ class Perceptron {
     this.weights = [0,0];
     this.points = points;
     this.weightsList = [];
-    this.pointsList = [];
+    // this.pointsList = [];
     this.maxIterations = maxIterations;
   }
 
