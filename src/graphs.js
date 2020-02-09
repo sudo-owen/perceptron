@@ -1,6 +1,6 @@
 let margin = {top: 10, right: 30, bottom: 30, left: 60},
-width = 400 - margin.left - margin.right,
-height = 360 - margin.top - margin.bottom;
+width = 440 - margin.left - margin.right,
+height = 330 - margin.top - margin.bottom;
 
 // Append the svg object to the body of the page
 export function createGraph(id) {

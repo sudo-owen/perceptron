@@ -6,12 +6,12 @@ The perceptron learning algorithm consists of 4 steps:
 
 1. Initialize a set of starting weights $w_1 = [0...0]$.
 2. Run the model on your dataset until you hit the first misclassified point.
-3. If a point $(x_t, y_t)$ is misclassified, update the weight $w_i$ with the following rule: $w_{i+1} = w_i + y_t(x_t)^T$. In other words, we add (or subtract) the misclassified point's value to our weights.
+3. If a point $(x_t, y_t)$ is misclassified, update the weight $w_i$ with the following rule: $w_{i+1} = w_i + y_t(x_t)^T$. In other words, we add (or subtract) the misclassified point's value to (or from) our weights.
 4. Go back to step 2 until all points are classified correctly.
 
 To get a feel for what I mean, try out the interactive demo below. You can see the model update its decision boundary for each misclassified point, which flashes briefly.
 
-**DEMO GOES HERE**
+**Demo 1**
 
 # Convergence Proof
 
@@ -142,11 +142,29 @@ Thus, we see that our algorithm will run for no more than $\frac{R^2}{\epsilon^2
 
 ### Changing the Margin
 
-Note that our convergence proof does not explicity depend on the dimensionality of our data points. Rather, the runtime is bounded mostly by the margin between the closest point and the separating hyperplane. 
+It's interesting to note that our convergence proof does not explicity depend on the dimensionality of our data points. Rather, the runtime depends on the size of the margin between the closest point and the separating hyperplane. 
 
-In other words, the difficulty of the problem is bounded by how easily separable the two classes are. Below, you can try adjusting the margin between the two classes to see how increasing/decreasing it changes how fast the perceptron converges.
+In other words, the difficulty of the problem is bounded by how easily separable the two classes are. The larger the margin, the faster the perceptron should converge. Below, you can try adjusting the margin between the two classes to see how increasing/decreasing it changes how fast the perceptron converges.
 
-# The Linearly Unseparable Case
-In the real world, data is never clean; it's noisy, and the linear separability assumption we made is basically never achieved. But, as we saw above, the size of the margin that separates the two classes is what allows the perceptron to converge at all. So the normal perceptron learning algorithm gives us no guarantees on how good it will perform on noisy data. However, there are several modifications to the perceptron algorithm which enable it to do well, even when the data is not linearly separable. Below, we'll explore the Maxover algorithm and the Voted Perceptron.
+**DEMO 2**
 
-### Maxover Algorithm
+# Linearly Unseparable Data
+In the real world, data is never clean; it's noisy, and the linear separability assumption we made is basically never achieved. But, as we saw above, the size of the margin that separates the two classes is what allows the perceptron to converge at all. So the normal perceptron learning algorithm gives us no guarantees on how good it will perform on noisy data. 
+
+However, there are several modifications to the perceptron algorithm which enable it to do well, even when the data is not linearly separable. Below, we'll explore the Maxover algorithm and the Voted Perceptron.
+
+# Maxover Algorithm
+
+In 1995, Andreas Wendemuth introduced three modifications to the perceptron in [Learning the Unlearnable](.docs/learning_the_unlearnable.pdf), all of which allow the algorithm to converge, even when the data is not linearly separable. 
+
+The main change is to the update rule. Instead of $w_{i+1} = w_i + y_t(x_t)^T$, the update rule is changed to $w_{i+1} = w_i + C(w_i, x^*)\cdot w_i + y^*(x^*)^T$, where $(x^*, y^*)$ refers to a specific data point (to be defined later) and $C$ is a function of this point as well as the previous iteration's weights.
+
+In this way, Wendemuth goes on to show that as long as $(x^*, y^*)$ and $C$ are chosen to satisfy some inequalities, this update rule will eventually converge. 
+
+(See the paper for more details because I'm also a little unclear on *exactly* how the math works out, but the main intuition is that as long as $C(w_i, x^*)\cdot w_i + y^*(x^*)^T$ has both a bounded norm and a positive dot product with repect to $w_i$, then norm of $w$ will always increase with each update. Then, in the limit, as the norm of $w$ grows, future updates (because they always add a bounded value) will not shift its direction very much, and it will eventually converge.)
+
+Each one of the modifications uses a different selection criteria for selecting $(x^*, y^*)$. Below, you can play around with a variant that uses THING as the criteria.
+
+**DEMO GOES HERE**
+
+# Voted Perceptron

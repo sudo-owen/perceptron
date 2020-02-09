@@ -15,7 +15,7 @@ export function getPoints(n, margin = 0.97) {
     slope = (Math.random()+0.1).toFixed(precision);
   }
   else {
-    slope = (3.5*Math.random()+1).toFixed(precision);
+    slope = (2*Math.random()+1).toFixed(precision);
   }
   // Points above the hyperplane
   for (let i = 0; i < parseInt(n/2); i++) {
@@ -44,17 +44,17 @@ export function getPoints(n, margin = 0.97) {
 }
 
 export function flipLabels(points, fraction) {
+  shuffle(points);
   for (let i = 0; i < parseInt(points.length*fraction); i++) {
     points[i][1] *= -1;
   }
-  return(points);
 }
 
 // Assumes two lists of same length [n x 1] + [n x 1]
 export function addV(v1, v2) {
   let result = [];
     for (let i = 0; i < v1.length; i++) {
-      result.push(v1[i]+v2[i]);
+      result.push(Number(v1[i]) + Number(v2[i]));
     }
     return(result);
 }
@@ -66,4 +66,10 @@ export function dotV(v1, v2) {
       result += v1[i]*v2[i];
     }
     return(result);
+}
+
+export function l2norm(v1) {
+  return(Math.sqrt(v1.reduce(function(acc, curr) {
+    return(acc + curr*curr);
+  }, 0)));
 }

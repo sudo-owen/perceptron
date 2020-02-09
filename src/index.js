@@ -1,11 +1,12 @@
 import {Perceptron} from './perceptron.js';
 import {VotedPerceptron} from './votedPerceptron.js';
+import {MaxoverPerceptron} from './maxoverPerceptron.js';
 import * as m from './matrix.js';
 import * as g from './graphs.js';
 
 let models = [];
 let graphs = [];
-let graphIds = ["#scatterplot0", "#scatterplot1", "#scatterplot3"];
+let graphIds = ["#scatterplot0", "#scatterplot1", "#scatterplot2"];
 // Set up d3 references
 for (let id of graphIds) {
   graphs.push(g.createGraph(id));
@@ -44,11 +45,11 @@ $(function() {
     let input = parentGraph.find(".numPoints");
     let n = input.val();
     if (validRange(input, n)) {
-      g.resetLine(graph, x, y);
       let [trueSlope, points] = m.getPoints(n);
+      g.resetLine(graph, x, y);
+      g.scatter(graph, points, x, y);
       setSlopes(parentGraph, trueSlope);
       models[index] = new Perceptron(points);
-      g.scatter(graph, points, x, y);
     }
   });
 
@@ -64,11 +65,11 @@ $(function() {
     let n = input.val();
     if (validRange(input, n)) {
       let margin = (100 - parentGraph.find(".margin").val())/100;
-      g.resetLine(graph, x, y);
       let [trueSlope, points] = m.getPoints(n, margin);
+      g.resetLine(graph, x, y);
+      g.scatter(graph, points, x, y);
       setSlopes(parentGraph, trueSlope);
       models[index] = new Perceptron(points);
-      g.scatter(graph, points, x, y);
     }
   });
 
@@ -76,31 +77,26 @@ $(function() {
     fitPerceptron($(this).parents(".graph"), 1);
   });
 
-  /*
-  $("#generate3").click(function() {
+  
+  $("#generate2").click(function() {
     let index = 2;
+    let parentGraph = $(this).parents(".graph");
     let [graph, x, y] = graphs[index];
-    let n = $("#numPoints1").val();
-    let iter = $("#iter3").val();
-    let noise = $("#noise3").val();
-    let max = parseInt($("#numPoints3").attr("max"));
-    let min = parseInt($("#numPoints3").attr("min"));
-    if (n <= max && n >= min) {
-      g.resetLine(graph, x, y);
+    let input = parentGraph.find(".numPoints");
+    let n = input.val();
+    if (validRange(input, n)) {
       let [trueSlope, points] = m.getPoints(n);
-      $("#slope3").text("True slope: " + trueSlope);
-      $("#slope3Pred").text("Learned slope: ");
-      m.flipLabels(points, (noise/100));
-      models[index] = new VotedPerceptron(points, iter);
+      let noise = (parentGraph.find(".noise").val()/100);
+      m.flipLabels(points, noise);
+      g.resetLine(graph, x, y);
       g.scatter(graph, points, x, y);
+      setSlopes(parentGraph, trueSlope);
+      models[index] = new MaxoverPerceptron(points);
     }
   });
-
-  $("#fit3").click(function() {
-    let index = 2;
-    let [graph, x, y] = graphs[index];
-    models[index].train();
+  
+  $("#fit2").click(function() {
+    fitPerceptron($(this).parents(".graph"), 2);
   });
-  */
   
 });

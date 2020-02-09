@@ -92,8 +92,10 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _perceptron_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var _votedPerceptron_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(3);
-/* harmony import */ var _matrix_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(2);
-/* harmony import */ var _graphs_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4);
+/* harmony import */ var _maxoverPerceptron_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
+/* harmony import */ var _matrix_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(2);
+/* harmony import */ var _graphs_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
+
 
 
 
@@ -101,10 +103,10 @@ __webpack_require__.r(__webpack_exports__);
 
 let models = [];
 let graphs = [];
-let graphIds = ["#scatterplot0", "#scatterplot1", "#scatterplot3"];
+let graphIds = ["#scatterplot0", "#scatterplot1", "#scatterplot2"];
 // Set up d3 references
 for (let id of graphIds) {
-  graphs.push(_graphs_js__WEBPACK_IMPORTED_MODULE_3__["createGraph"](id));
+  graphs.push(_graphs_js__WEBPACK_IMPORTED_MODULE_4__["createGraph"](id));
 }
 
 // JQuery onready
@@ -125,7 +127,7 @@ $(function() {
     let [graph, x, y] = graphs[index];
     models[index].train();
     let predSlope = parentGraph.find(".predSlope");
-    _graphs_js__WEBPACK_IMPORTED_MODULE_3__["showTraining"](graph, ".hyperplane", predSlope, y, 0, models[index].weightsList);
+    _graphs_js__WEBPACK_IMPORTED_MODULE_4__["showTraining"](graph, ".hyperplane", predSlope, y, 0, models[index].weightsList);
   }
 
   /*
@@ -140,11 +142,11 @@ $(function() {
     let input = parentGraph.find(".numPoints");
     let n = input.val();
     if (validRange(input, n)) {
-      _graphs_js__WEBPACK_IMPORTED_MODULE_3__["resetLine"](graph, x, y);
-      let [trueSlope, points] = _matrix_js__WEBPACK_IMPORTED_MODULE_2__["getPoints"](n);
+      let [trueSlope, points] = _matrix_js__WEBPACK_IMPORTED_MODULE_3__["getPoints"](n);
+      _graphs_js__WEBPACK_IMPORTED_MODULE_4__["resetLine"](graph, x, y);
+      _graphs_js__WEBPACK_IMPORTED_MODULE_4__["scatter"](graph, points, x, y);
       setSlopes(parentGraph, trueSlope);
       models[index] = new _perceptron_js__WEBPACK_IMPORTED_MODULE_0__["Perceptron"](points);
-      _graphs_js__WEBPACK_IMPORTED_MODULE_3__["scatter"](graph, points, x, y);
     }
   });
 
@@ -160,11 +162,11 @@ $(function() {
     let n = input.val();
     if (validRange(input, n)) {
       let margin = (100 - parentGraph.find(".margin").val())/100;
-      _graphs_js__WEBPACK_IMPORTED_MODULE_3__["resetLine"](graph, x, y);
-      let [trueSlope, points] = _matrix_js__WEBPACK_IMPORTED_MODULE_2__["getPoints"](n, margin);
+      let [trueSlope, points] = _matrix_js__WEBPACK_IMPORTED_MODULE_3__["getPoints"](n, margin);
+      _graphs_js__WEBPACK_IMPORTED_MODULE_4__["resetLine"](graph, x, y);
+      _graphs_js__WEBPACK_IMPORTED_MODULE_4__["scatter"](graph, points, x, y);
       setSlopes(parentGraph, trueSlope);
       models[index] = new _perceptron_js__WEBPACK_IMPORTED_MODULE_0__["Perceptron"](points);
-      _graphs_js__WEBPACK_IMPORTED_MODULE_3__["scatter"](graph, points, x, y);
     }
   });
 
@@ -172,32 +174,27 @@ $(function() {
     fitPerceptron($(this).parents(".graph"), 1);
   });
 
-  /*
-  $("#generate3").click(function() {
+  
+  $("#generate2").click(function() {
     let index = 2;
+    let parentGraph = $(this).parents(".graph");
     let [graph, x, y] = graphs[index];
-    let n = $("#numPoints1").val();
-    let iter = $("#iter3").val();
-    let noise = $("#noise3").val();
-    let max = parseInt($("#numPoints3").attr("max"));
-    let min = parseInt($("#numPoints3").attr("min"));
-    if (n <= max && n >= min) {
-      g.resetLine(graph, x, y);
-      let [trueSlope, points] = m.getPoints(n);
-      $("#slope3").text("True slope: " + trueSlope);
-      $("#slope3Pred").text("Learned slope: ");
-      m.flipLabels(points, (noise/100));
-      models[index] = new VotedPerceptron(points, iter);
-      g.scatter(graph, points, x, y);
+    let input = parentGraph.find(".numPoints");
+    let n = input.val();
+    if (validRange(input, n)) {
+      let [trueSlope, points] = _matrix_js__WEBPACK_IMPORTED_MODULE_3__["getPoints"](n);
+      let noise = (parentGraph.find(".noise").val()/100);
+      _matrix_js__WEBPACK_IMPORTED_MODULE_3__["flipLabels"](points, noise);
+      _graphs_js__WEBPACK_IMPORTED_MODULE_4__["resetLine"](graph, x, y);
+      _graphs_js__WEBPACK_IMPORTED_MODULE_4__["scatter"](graph, points, x, y);
+      setSlopes(parentGraph, trueSlope);
+      models[index] = new _maxoverPerceptron_js__WEBPACK_IMPORTED_MODULE_2__["MaxoverPerceptron"](points);
     }
   });
-
-  $("#fit3").click(function() {
-    let index = 2;
-    let [graph, x, y] = graphs[index];
-    models[index].train();
+  
+  $("#fit2").click(function() {
+    fitPerceptron($(this).parents(".graph"), 2);
   });
-  */
   
 });
 
@@ -262,6 +259,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "flipLabels", function() { return flipLabels; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "addV", function() { return addV; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dotV", function() { return dotV; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "l2norm", function() { return l2norm; });
 function shuffle(arr) {
   for (let i = 0; i < arr.length; i++) {
     let newIndex = parseInt(Math.random()*arr.length);
@@ -279,7 +277,7 @@ function getPoints(n, margin = 0.97) {
     slope = (Math.random()+0.1).toFixed(precision);
   }
   else {
-    slope = (3.5*Math.random()+1).toFixed(precision);
+    slope = (2*Math.random()+1).toFixed(precision);
   }
   // Points above the hyperplane
   for (let i = 0; i < parseInt(n/2); i++) {
@@ -308,17 +306,17 @@ function getPoints(n, margin = 0.97) {
 }
 
 function flipLabels(points, fraction) {
+  shuffle(points);
   for (let i = 0; i < parseInt(points.length*fraction); i++) {
     points[i][1] *= -1;
   }
-  return(points);
 }
 
 // Assumes two lists of same length [n x 1] + [n x 1]
 function addV(v1, v2) {
   let result = [];
     for (let i = 0; i < v1.length; i++) {
-      result.push(v1[i]+v2[i]);
+      result.push(Number(v1[i]) + Number(v2[i]));
     }
     return(result);
 }
@@ -330,6 +328,12 @@ function dotV(v1, v2) {
       result += v1[i]*v2[i];
     }
     return(result);
+}
+
+function l2norm(v1) {
+  return(Math.sqrt(v1.reduce(function(acc, curr) {
+    return(acc + curr*curr);
+  }, 0)));
 }
 
 /***/ }),
@@ -408,13 +412,131 @@ class VotedPerceptron {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MaxoverPerceptron", function() { return MaxoverPerceptron; });
+/* harmony import */ var _matrix_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+
+
+class MaxoverPerceptron {
+  
+  constructor(points) {
+    this.points = points;
+    this.weights = this.hopfieldVector(points);
+    this.weightsList = [];
+  }
+
+  hopfieldVector(points) {
+    let result = [0,0];
+    for (let p of points) {
+      result = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["addV"](result, p[0]);
+    }
+    let normalResult = [0,0];
+    normalResult[0] = 1;
+    normalResult[1] = -result[0]/result[1];
+    let length = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["l2norm"](normalResult);
+    return(normalResult.map(function(a) {
+      return(a/length);
+    }));
+  }
+
+  updateWeights1() {
+    let sigma;
+    let minProduct = Math.pow(10, 1000);
+    for (let p of this.points) {
+      // Get value of data point * label
+      let currSigma =  p[0].map(x => x*p[1]);
+      let product = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["dotV"](this.weights, currSigma);
+      if (product < minProduct) {
+        minProduct = product;
+        sigma = currSigma;
+      }
+    }
+    let val = (2 - minProduct)/(_matrix_js__WEBPACK_IMPORTED_MODULE_0__["l2norm"](this.weights)**2 - minProduct);
+    let r = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["addV"](sigma, this.weights.map(x => x*val));
+    if (r !== undefined) {
+      this.weights = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["addV"](this.weights, r);
+    }
+  }
+
+  updateWeights2() {
+    _matrix_js__WEBPACK_IMPORTED_MODULE_0__["shuffle"](this.points);
+    let sigma;
+    let minProduct;
+    let delta = 0.1;
+    for (let p of this.points) {
+      // Get value of data point * label
+      let currSigma =  p[0].map(x => x*p[1]);
+      let product = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["dotV"](this.weights, currSigma);
+      if (product/_matrix_js__WEBPACK_IMPORTED_MODULE_0__["l2norm"](this.weights) < delta) {
+        minProduct = product;
+        sigma = currSigma;
+        break;
+      }
+    }
+    let val = (2 - minProduct)/(_matrix_js__WEBPACK_IMPORTED_MODULE_0__["l2norm"](this.weights)**2 - minProduct);
+    let r = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["addV"](sigma, this.weights.map(x => x*val));
+    if (r !== undefined) {
+      this.weights = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["addV"](this.weights, r);
+    }
+  }
+
+  updateWeights3() {
+    let sigma;
+    let maxProduct = -Math.pow(10, 999);
+    let delta = -0.25;
+    for (let p of this.points) {
+      // Get value of data point * label
+      let currSigma =  p[0].map(x => x*p[1]);
+      let product = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["dotV"](this.weights, currSigma);
+      if (product/_matrix_js__WEBPACK_IMPORTED_MODULE_0__["l2norm"](this.weights) < delta && product > maxProduct) {
+        maxProduct = product;
+        sigma = currSigma;
+      }
+    }
+    let val = (2 - maxProduct)/(_matrix_js__WEBPACK_IMPORTED_MODULE_0__["l2norm"](this.weights)**2 - maxProduct);
+    // TODO: try adding sigma instead
+    let r = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["addV"](sigma, this.weights.map(x => x*val));
+    if (r !== undefined) {
+      this.weights = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["addV"](this.weights, r);
+    }
+  }
+
+  train() {
+    let MAX_ITERS = 500;
+    let delta = 0.995;
+    for (let i = 0; i < MAX_ITERS; i++) {
+      this.updateWeights1();
+      this.weightsList.push(this.weights);
+      // Early stopping once every 10 iters to check for convergence
+      if (i%10 === 1 && i > this.points.length/2) {
+        let prevWeights = this.weightsList[this.weightsList.length-2];
+        let product = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["dotV"](this.weights, prevWeights)**2;
+        let w1 = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["dotV"](this.weights, this.weights);
+        let w2 = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["dotV"](prevWeights, prevWeights);
+        let result = (product/(w1*w2));
+        if (result < 1/delta && result > delta) {
+          break;
+        }
+      }
+    }
+  }
+
+}
+
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createGraph", function() { return createGraph; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "resetLine", function() { return resetLine; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "scatter", function() { return scatter; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "showTraining", function() { return showTraining; });
 let margin = {top: 10, right: 30, bottom: 30, left: 60},
-width = 400 - margin.left - margin.right,
-height = 360 - margin.top - margin.bottom;
+width = 440 - margin.left - margin.right,
+height = 330 - margin.top - margin.bottom;
 
 // Append the svg object to the body of the page
 function createGraph(id) {
@@ -477,7 +599,7 @@ function scatter(chart, points, x, y) {
 function showTraining(svg, lineId, slopeText, y, i, wList) {
   let weights = wList[i];
   let slope = -weights[0]/weights[1];
-  slopeText.text("Learned slope: " + (slope).toFixed(3) + " Iteration " + (i+1) + "/" + wList.length);
+  slopeText.text("Learned slope: " + (slope).toFixed(3) + " Iteration: " + (i+1) + "/" + wList.length);
   svg.select(lineId)
       .transition()
         .duration(300)

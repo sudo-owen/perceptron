@@ -215,25 +215,22 @@
   <div>STUFF GOES HERE</div>
 
   <div class = "graph">
-    <div id="scatterplot3"></div>
+    <div id="scatterplot2"></div>
     <div class="input-holder">
-      <input style="width: 3rem" type="number" id="numPoints3" min="10" max="200" value="50"> points (from 10 to 200)
+      <input style="width: 3rem" type="number" class="numPoints" min="10" max="200" value="50"> points (from 10 to 200)
     </div>
     <div class="input-holder">
-      <input style="width: 3rem" type="number" id="iter3" min="1" max="10" value="1"> iterations (from 1 to 10)
-    </div>
-    <div class="input-holder">
-      <input style="width: 3rem" type="number" id="noise3" min="0" max="40" value="10"> percent noise (from 0 to 40)
+      <input style="width: 3rem" type="number" class="noise" min="0" max="40" value="10"> percent noise (from 0 to 40)
     </div>
     <br>
     <div>
-      <span id="slope3">True slope:</span>
+      <span class="trueSlope">True slope:</span>
       <br>
-      <span id="slopePred3">Learned slope:</span>
+      <span class="predSlope">Learned slope:</span>
     </div>
     <br>
-    <button id="generate3">Generate Data</button>
-    <button id="fit3">Fit Perceptron</button>
+    <button id="generate2">Generate Data</button>
+    <button id="fit2">Fit Perceptron</button>
   </div>  
 
 </body>
