@@ -6,7 +6,7 @@ import * as g from './graphs.js';
 
 let models = [];
 let graphs = [];
-let graphIds = ["#scatterplot0", "#scatterplot1", "#scatterplot2"];
+let graphIds = ["#scatterplot0", "#scatterplot1", "#scatterplot2", "#scatterplot3"];
 // Set up d3 references
 for (let id of graphIds) {
   graphs.push(g.createGraph(id));
@@ -30,7 +30,7 @@ $(function() {
     let [graph, x, y] = graphs[index];
     models[index].train();
     let predSlope = parentGraph.find(".predSlope");
-    g.showTraining(graph, ".hyperplane", predSlope, y, 0, models[index].weightsList);
+    g.showTraining(graph, ".hyperplane", predSlope, y, 0, models[index]);
   }
 
   /*
@@ -99,4 +99,25 @@ $(function() {
     fitPerceptron($(this).parents(".graph"), 2);
   });
   
+  $("#generate3").click(function() {
+    let index = 3;
+    let parentGraph = $(this).parents(".graph");
+    let [graph, x, y] = graphs[index];
+    let input = parentGraph.find(".numPoints");
+    let n = input.val();
+    let iters = parentGraph.find(".iters").val();
+    if (validRange(input, n)) {
+      let [trueSlope, points] = m.getPoints(n);
+      let noise = (parentGraph.find(".noise").val()/100);
+      m.flipLabels(points, noise);
+      g.resetLine(graph, x, y);
+      g.scatter(graph, points, x, y);
+      setSlopes(parentGraph, trueSlope);
+      models[index] = new VotedPerceptron(points, iters);
+    }
+  });
+
+  $("#fit3").click(function() {
+    fitPerceptron($(this).parents(".graph"), 3);
+  });
 });

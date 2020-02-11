@@ -4,11 +4,18 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 1.15rem;
   line-height: 1.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .graph {
   text-align: center;
   margin-bottom: 5rem;
+  margin-top: 3rem;
+}
+
+h1 {
+  margin-top: 3.5rem;
 }
 
 h3 {
@@ -24,4 +31,12 @@ button {
 .input-holder {
   margin-top: 0.75rem;
   color: #353535;
+}
+
+input {
+  width: 3rem;
+}
+
+.k {
+  width: 4rem;
 }

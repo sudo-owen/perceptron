@@ -2,12 +2,12 @@ import * as m from './matrix.js';
 
 class Perceptron {
   
-  constructor(points, maxIterations = 500) {
+  constructor(points) {
     this.weights = [0,0];
     this.points = points;
     this.weightsList = [];
-    // this.pointsList = [];
-    this.maxIterations = maxIterations;
+    this.pointsList = [];
+    this.maxIterations = this.points.length;
   }
 
   updateWeights() {
@@ -17,7 +17,7 @@ class Perceptron {
       let label = p[1];
       if (Math.sign(m.dotV(this.weights, p[0])) != label) {
         this.weights = m.addV(this.weights, p[0].map(x => x * label));
-        //this.pointsList.push(p[0]);
+        this.pointsList.push(p[0]);
         return(true);
       }
     }

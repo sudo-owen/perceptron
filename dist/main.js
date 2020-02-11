@@ -103,7 +103,7 @@ __webpack_require__.r(__webpack_exports__);
 
 let models = [];
 let graphs = [];
-let graphIds = ["#scatterplot0", "#scatterplot1", "#scatterplot2"];
+let graphIds = ["#scatterplot0", "#scatterplot1", "#scatterplot2", "#scatterplot3"];
 // Set up d3 references
 for (let id of graphIds) {
   graphs.push(_graphs_js__WEBPACK_IMPORTED_MODULE_4__["createGraph"](id));
@@ -127,7 +127,7 @@ $(function() {
     let [graph, x, y] = graphs[index];
     models[index].train();
     let predSlope = parentGraph.find(".predSlope");
-    _graphs_js__WEBPACK_IMPORTED_MODULE_4__["showTraining"](graph, ".hyperplane", predSlope, y, 0, models[index].weightsList);
+    _graphs_js__WEBPACK_IMPORTED_MODULE_4__["showTraining"](graph, ".hyperplane", predSlope, y, 0, models[index]);
   }
 
   /*
@@ -196,6 +196,27 @@ $(function() {
     fitPerceptron($(this).parents(".graph"), 2);
   });
   
+  $("#generate3").click(function() {
+    let index = 3;
+    let parentGraph = $(this).parents(".graph");
+    let [graph, x, y] = graphs[index];
+    let input = parentGraph.find(".numPoints");
+    let n = input.val();
+    let iters = parentGraph.find(".iters").val();
+    if (validRange(input, n)) {
+      let [trueSlope, points] = _matrix_js__WEBPACK_IMPORTED_MODULE_3__["getPoints"](n);
+      let noise = (parentGraph.find(".noise").val()/100);
+      _matrix_js__WEBPACK_IMPORTED_MODULE_3__["flipLabels"](points, noise);
+      _graphs_js__WEBPACK_IMPORTED_MODULE_4__["resetLine"](graph, x, y);
+      _graphs_js__WEBPACK_IMPORTED_MODULE_4__["scatter"](graph, points, x, y);
+      setSlopes(parentGraph, trueSlope);
+      models[index] = new _votedPerceptron_js__WEBPACK_IMPORTED_MODULE_1__["VotedPerceptron"](points, iters);
+    }
+  });
+
+  $("#fit3").click(function() {
+    fitPerceptron($(this).parents(".graph"), 3);
+  });
 });
 
 
@@ -211,12 +232,12 @@ __webpack_require__.r(__webpack_exports__);
 
 class Perceptron {
   
-  constructor(points, maxIterations = 500) {
+  constructor(points) {
     this.weights = [0,0];
     this.points = points;
     this.weightsList = [];
-    // this.pointsList = [];
-    this.maxIterations = maxIterations;
+    this.pointsList = [];
+    this.maxIterations = this.points.length;
   }
 
   updateWeights() {
@@ -226,7 +247,7 @@ class Perceptron {
       let label = p[1];
       if (Math.sign(_matrix_js__WEBPACK_IMPORTED_MODULE_0__["dotV"](this.weights, p[0])) != label) {
         this.weights = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["addV"](this.weights, p[0].map(x => x * label));
-        //this.pointsList.push(p[0]);
+        this.pointsList.push(p[0]);
         return(true);
       }
     }
@@ -420,8 +441,9 @@ class MaxoverPerceptron {
   
   constructor(points) {
     this.points = points;
-    this.weights = this.hopfieldVector(points);
+    this.weights = [-0.1, 0.1];
     this.weightsList = [];
+    this.pointsList = [];
   }
 
   hopfieldVector(points) {
@@ -469,6 +491,7 @@ class MaxoverPerceptron {
       if (product/_matrix_js__WEBPACK_IMPORTED_MODULE_0__["l2norm"](this.weights) < delta) {
         minProduct = product;
         sigma = currSigma;
+        this.pointsList.push(p[0]);
         break;
       }
     }
@@ -482,7 +505,7 @@ class MaxoverPerceptron {
   updateWeights3() {
     let sigma;
     let maxProduct = -Math.pow(10, 999);
-    let delta = -0.25;
+    let delta = -0.15;
     for (let p of this.points) {
       // Get value of data point * label
       let currSigma =  p[0].map(x => x*p[1]);
@@ -493,7 +516,6 @@ class MaxoverPerceptron {
       }
     }
     let val = (2 - maxProduct)/(_matrix_js__WEBPACK_IMPORTED_MODULE_0__["l2norm"](this.weights)**2 - maxProduct);
-    // TODO: try adding sigma instead
     let r = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["addV"](sigma, this.weights.map(x => x*val));
     if (r !== undefined) {
       this.weights = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["addV"](this.weights, r);
@@ -504,10 +526,10 @@ class MaxoverPerceptron {
     let MAX_ITERS = 500;
     let delta = 0.995;
     for (let i = 0; i < MAX_ITERS; i++) {
-      this.updateWeights1();
+      this.updateWeights2();
       this.weightsList.push(this.weights);
-      // Early stopping once every 10 iters to check for convergence
-      if (i%10 === 1 && i > this.points.length/2) {
+      // Early stopping once every 2 iters to check for convergence
+      if (i%2 === 1 && i > this.points.length/2) {
         let prevWeights = this.weightsList[this.weightsList.length-2];
         let product = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["dotV"](this.weights, prevWeights)**2;
         let w1 = _matrix_js__WEBPACK_IMPORTED_MODULE_0__["dotV"](this.weights, this.weights);
@@ -520,6 +542,15 @@ class MaxoverPerceptron {
     }
   }
 
+  err() {
+    let numWrong = 0;
+    for (let p of this.points) {
+      if (Math.sign(_matrix_js__WEBPACK_IMPORTED_MODULE_0__["dotV"](this.weights, p[0])) !== p[1]) {
+        numWrong++;
+      }
+    }
+    return(numWrong/this.points.length);
+  }
 }
 
 
@@ -586,6 +617,12 @@ function scatter(chart, points, x, y) {
     .attr("cx", function (d) { return x(d[0][0]); } )
     .attr("cy", function (d) { return y(d[0][1]); } )
     .attr("r", 3.0)
+    .attr("id", function (d) {
+      let x = d[0][0].toString().replace('.','');
+      let y = d[0][1].toString().replace('.','');
+      let id = "c" + x + y;
+      return(id);
+    })
     .style("fill", function(d) {
       if (d[1] == 1) {
         return("#EE5C42");
@@ -596,21 +633,59 @@ function scatter(chart, points, x, y) {
   });
 }
 
-function showTraining(svg, lineId, slopeText, y, i, wList) {
+function showTraining(svg, lineId, slopeText, y, i, model) {
+  let wList = model.weightsList;
   let weights = wList[i];
   let slope = -weights[0]/weights[1];
   slopeText.text("Learned slope: " + (slope).toFixed(3) + " Iteration: " + (i+1) + "/" + wList.length);
-  svg.select(lineId)
-      .transition()
-        .duration(300)
-        .attr("y2", y(slope))
-      .end()
-      .then(() => {
-        if (i+1 < wList.length) {
-          showTraining(svg, lineId, slopeText, y, i+1, wList);
+  let pointId = ("#c" + model.pointsList[i][0].toString().replace('.','') 
+    + model.pointsList[i][1].toString().replace('.',''));
+
+  svg.select(pointId)
+    .transition()
+      .delay(200)
+      .duration(300)
+      .attr("r", 10.0)
+      .style("fill", function(d) {
+        if (d[1] == 1) {
+          return("#af351f");
+        }
+        else {
+          return("#105377");
         }
       })
+      .end()
+      .then(() => {
+  svg.select(lineId)
+    .transition()
+      .duration(400)
+      .attr("y2", y(slope))
+    .end()
+    .then(() => {
+  svg.select(pointId)
+  .transition()
+    .duration(500)
+    .attr("r", 3.0)
+    .style("fill", function(d) {
+      if (d[1] == 1) {
+        return("#EE5C42");
+      }
+      else {
+        return("#0198E1");
+      }
+    })
+    .end()
+    .then(() => {
+      if (i+1 < wList.length) {
+        showTraining(svg, lineId, slopeText, y, i+1, model);
+      }
+     })
+    });
+  });
 }
+
+
+
 
 /***/ })
 /******/ ]);

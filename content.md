@@ -1,6 +1,6 @@
 # Introduction
 
-The perceptron is a well-known machine linear classifier invented in 1958 by Frank Rosenblatt. In the binary classification case, the perceptron is parameterized by a weight vector $w$ and outputs $\hat{y_i} = \text{sign}(w \cdot x_i^T)$ depending on if the class is positive ($+1$) or negative ($-1$). What makes this model interesting is that *if* the data we are trying to classify are linearly seperable, then the perceptron learning algorithm will always converge to a set of weights $w$ which will correctly classify all points.
+The perceptron is a well-known machine linear classifier invented in 1958 by Frank Rosenblatt. In the binary classification case, the perceptron is parameterized by a weight vector $w$ and outputs $\hat{y_i} = \text{sign}(w \cdot x_i)$ depending on if the class is positive ($+1$) or negative ($-1$). What makes this model interesting is that *if* the data we are trying to classify are linearly seperable, then the perceptron learning algorithm will always converge to a set of weights $w$ which will correctly classify all points.
 
 The perceptron learning algorithm consists of 4 steps:
 
@@ -9,7 +9,7 @@ The perceptron learning algorithm consists of 4 steps:
 3. If a point $(x_t, y_t)$ is misclassified, update the weight $w_i$ with the following rule: $w_{i+1} = w_i + y_t(x_t)^T$. In other words, we add (or subtract) the misclassified point's value to (or from) our weights.
 4. Go back to step 2 until all points are classified correctly.
 
-To get a feel for what I mean, try out the interactive demo below. You can see the model update its decision boundary for each misclassified point, which flashes briefly.
+To get a feel for what I mean, try out the interactive demo below. What happens is that a random hyperplane is selected, and then points are randomly generated on both sides. You can see the model update its decision boundary for each misclassified point, which flashes briefly.
 
 **Demo 1**
 
@@ -155,16 +155,32 @@ However, there are several modifications to the perceptron algorithm which enabl
 
 # Maxover Algorithm
 
-In 1995, Andreas Wendemuth introduced three modifications to the perceptron in [Learning the Unlearnable](.docs/learning_the_unlearnable.pdf), all of which allow the algorithm to converge, even when the data is not linearly separable. 
+If the data are not linearly separable, it would be good if we could at least converge to a locally good solution. In 1995, Andreas Wendemuth introduced three modifications to the perceptron in [Learning the Unlearnable](docs/learning_the_unlearnable.pdf), all of which allow the algorithm to converge, even when the data is not linearly separable. 
 
 The main change is to the update rule. Instead of $w_{i+1} = w_i + y_t(x_t)^T$, the update rule is changed to $w_{i+1} = w_i + C(w_i, x^*)\cdot w_i + y^*(x^*)^T$, where $(x^*, y^*)$ refers to a specific data point (to be defined later) and $C$ is a function of this point as well as the previous iteration's weights.
 
-In this way, Wendemuth goes on to show that as long as $(x^*, y^*)$ and $C$ are chosen to satisfy some inequalities, this update rule will eventually converge. 
+In this way, Wendemuth goes on to show that as long as $(x^*, y^*)$ and $C$ are chosen to satisfy certain inequalities, this update rule will eventually converge. 
 
 (See the paper for more details because I'm also a little unclear on *exactly* how the math works out, but the main intuition is that as long as $C(w_i, x^*)\cdot w_i + y^*(x^*)^T$ has both a bounded norm and a positive dot product with repect to $w_i$, then norm of $w$ will always increase with each update. Then, in the limit, as the norm of $w$ grows, future updates (because they always add a bounded value) will not shift its direction very much, and it will eventually converge.)
 
-Each one of the modifications uses a different selection criteria for selecting $(x^*, y^*)$. Below, you can play around with a variant that uses THING as the criteria.
+Each one of the modifications uses a different selection criteria for selecting $(x^*, y^*)$. One of the three algorithms in Wendemuth's paper uses the criteria where $(x^*, y^*)_t$ is defined to be a random point which satisfies the following inequality:
+
+$\frac{y^*(w_t \cdot x^*)}{||w_t||} < k$ 
+
+This is the version you can play with below. Note the value of $k$ is a tweakable hyperparameter; I've merely set it to default to -0.25 below because that's what worked well for me when I was playing around. The error rate is also displayed once the perceptron is done training. Given a noise proportion of $p$, we'd ideally like to get an error rate as close to $p$ as possible.
 
 **DEMO GOES HERE**
 
 # Voted Perceptron
+
+Alternatively, if the data are not linearly separable, perhaps we could get better performance using an ensemble of linear classifiers. This is what Yoav Freund and Robert Schapire accomplish in 1999's [Large Margin Classification Using the Perceptron Algorithm](docs/voted_perceptron.pdf).
+
+There are two main changes to the perceptron algorithm. The first is that, during each iteration when we update our weights $w_t$, we store it in a list $W$, along with a vote value $c_t$, which represents how many data points $w_t$ classified correctly before it got something wrong (and thus had to be updated). Then, at test time, our prediction for a data point $x_i$ is the majority vote of all the weights in our list, weighted by their vote. 
+
+In other words, $\hat{y_i} = \text{sign}(\sum_{w_j \in W} c_j(w \cdot x_i))$
+
+Though it's both intuitive and easy to implement, the analyses for the Voted Perceptron do not extend past running it just once through the training set. However, we empirically see that performance continues to improve if we make multiple passes through the training set and thus extend the length of $W$. 
+
+Below, you can see this for yourself by changing the number of iterations the Voted Perceptron runs for, and then seeing the resulting error rate.
+
+**DEMO GOES HERE**

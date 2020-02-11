@@ -50,6 +50,12 @@ export function scatter(chart, points, x, y) {
     .attr("cx", function (d) { return x(d[0][0]); } )
     .attr("cy", function (d) { return y(d[0][1]); } )
     .attr("r", 3.0)
+    .attr("id", function (d) {
+      let x = d[0][0].toString().replace('.','');
+      let y = d[0][1].toString().replace('.','');
+      let id = "c" + x + y;
+      return(id);
+    })
     .style("fill", function(d) {
       if (d[1] == 1) {
         return("#EE5C42");
@@ -60,18 +66,55 @@ export function scatter(chart, points, x, y) {
   });
 }
 
-export function showTraining(svg, lineId, slopeText, y, i, wList) {
+export function showTraining(svg, lineId, slopeText, y, i, model) {
+  let wList = model.weightsList;
   let weights = wList[i];
   let slope = -weights[0]/weights[1];
   slopeText.text("Learned slope: " + (slope).toFixed(3) + " Iteration: " + (i+1) + "/" + wList.length);
-  svg.select(lineId)
-      .transition()
-        .duration(300)
-        .attr("y2", y(slope))
-      .end()
-      .then(() => {
-        if (i+1 < wList.length) {
-          showTraining(svg, lineId, slopeText, y, i+1, wList);
+  let pointId = ("#c" + model.pointsList[i][0].toString().replace('.','') 
+    + model.pointsList[i][1].toString().replace('.',''));
+
+  svg.select(pointId)
+    .transition()
+      .delay(200)
+      .duration(300)
+      .attr("r", 10.0)
+      .style("fill", function(d) {
+        if (d[1] == 1) {
+          return("#af351f");
+        }
+        else {
+          return("#105377");
         }
       })
+      .end()
+      .then(() => {
+  svg.select(lineId)
+    .transition()
+      .duration(400)
+      .attr("y2", y(slope))
+    .end()
+    .then(() => {
+  svg.select(pointId)
+  .transition()
+    .duration(500)
+    .attr("r", 3.0)
+    .style("fill", function(d) {
+      if (d[1] == 1) {
+        return("#EE5C42");
+      }
+      else {
+        return("#0198E1");
+      }
+    })
+    .end()
+    .then(() => {
+      if (i+1 < wList.length) {
+        showTraining(svg, lineId, slopeText, y, i+1, model);
+      }
+     })
+    });
+  });
 }
+
+

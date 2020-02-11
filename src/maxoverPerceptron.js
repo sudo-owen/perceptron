@@ -4,8 +4,9 @@ class MaxoverPerceptron {
   
   constructor(points) {
     this.points = points;
-    this.weights = this.hopfieldVector(points);
+    this.weights = [-0.1, 0.1];
     this.weightsList = [];
+    this.pointsList = [];
   }
 
   hopfieldVector(points) {
@@ -53,6 +54,7 @@ class MaxoverPerceptron {
       if (product/m.l2norm(this.weights) < delta) {
         minProduct = product;
         sigma = currSigma;
+        this.pointsList.push(p[0]);
         break;
       }
     }
@@ -66,7 +68,7 @@ class MaxoverPerceptron {
   updateWeights3() {
     let sigma;
     let maxProduct = -Math.pow(10, 999);
-    let delta = -0.25;
+    let delta = -0.15;
     for (let p of this.points) {
       // Get value of data point * label
       let currSigma =  p[0].map(x => x*p[1]);
@@ -77,7 +79,6 @@ class MaxoverPerceptron {
       }
     }
     let val = (2 - maxProduct)/(m.l2norm(this.weights)**2 - maxProduct);
-    // TODO: try adding sigma instead
     let r = m.addV(sigma, this.weights.map(x => x*val));
     if (r !== undefined) {
       this.weights = m.addV(this.weights, r);
@@ -88,10 +89,10 @@ class MaxoverPerceptron {
     let MAX_ITERS = 500;
     let delta = 0.995;
     for (let i = 0; i < MAX_ITERS; i++) {
-      this.updateWeights1();
+      this.updateWeights2();
       this.weightsList.push(this.weights);
-      // Early stopping once every 10 iters to check for convergence
-      if (i%10 === 1 && i > this.points.length/2) {
+      // Early stopping once every 2 iters to check for convergence
+      if (i%2 === 1 && i > this.points.length/2) {
         let prevWeights = this.weightsList[this.weightsList.length-2];
         let product = m.dotV(this.weights, prevWeights)**2;
         let w1 = m.dotV(this.weights, this.weights);
@@ -104,6 +105,15 @@ class MaxoverPerceptron {
     }
   }
 
+  err() {
+    let numWrong = 0;
+    for (let p of this.points) {
+      if (Math.sign(m.dotV(this.weights, p[0])) !== p[1]) {
+        numWrong++;
+      }
+    }
+    return(numWrong/this.points.length);
+  }
 }
 
 export { MaxoverPerceptron };
