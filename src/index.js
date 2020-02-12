@@ -12,26 +12,40 @@ for (let id of graphIds) {
   graphs.push(g.createGraph(id));
 }
 
+function validRange(input, n) {
+  let max = parseInt(input.attr("max"));
+  let min = parseInt(input.attr("min"));
+  return(n <= max && n >= min);
+}
+
+function setSlopes(parentGraph, trueSlope) {
+  parentGraph.find(".trueSlope").text("True slope: " + trueSlope);
+  parentGraph.find(".predSlope").text("Learned slope: ");
+}
+
+function fitPerceptron(parentGraph, index) {
+  let [graph, x, y] = graphs[index];
+  models[index].train();
+  let predSlope = parentGraph.find(".predSlope");
+  g.showTraining(graph, ".hyperplane", predSlope, x, y, 0, models[index]);
+}
+
+function initInput() {
+  $(".slider").each(function(i) {
+    let initVal = $(this).val();
+    $(this).siblings(".input-value").text(initVal);
+  });
+}
+
 // JQuery onready
 $(function() {
 
-  function validRange(input, n) {
-    let max = parseInt(input.attr("max"));
-    let min = parseInt(input.attr("min"));
-    return(n <= max && n >= min);
-  }
-
-  function setSlopes(parentGraph, trueSlope) {
-    parentGraph.find(".trueSlope").text("True slope: " + trueSlope);
-    parentGraph.find(".predSlope").text("Learned slope: ");
-  }
-
-  function fitPerceptron(parentGraph, index) {
-    let [graph, x, y] = graphs[index];
-    models[index].train();
-    let predSlope = parentGraph.find(".predSlope");
-    g.showTraining(graph, ".hyperplane", predSlope, y, 0, models[index]);
-  }
+  initInput();
+  $(".slider").on("input", function() {
+    let initVal = $(this).val();
+    console.log(initVal);
+    $(this).siblings(".input-value").text(initVal);
+  });
 
   /*
    generateN will generate a scatterplot

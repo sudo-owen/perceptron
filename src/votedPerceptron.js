@@ -7,6 +7,8 @@ class VotedPerceptron {
     this.points = points;
     this.weightsList = [];
     this.votesList = [];
+    this.maxVote;
+    this.pointsList = [];
     this.maxIterations = maxIterations;
   }
 
@@ -22,6 +24,7 @@ class VotedPerceptron {
           this.weightsList.push(this.weights);
           this.votesList.push(vote);
           vote = 0;
+          this.pointsList.push(p[0]);
         }
       }
       else {
@@ -34,6 +37,7 @@ class VotedPerceptron {
     for (let i = 0; i < this.maxIterations; i++) {
       this.updateWeights();
     }
+    this.maxVote = Math.max(...this.votesList);
   }
 
   predict(p) {

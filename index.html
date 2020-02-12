@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- CSS styles -->
+    <link rel="stylesheet" href="./styles.css">
   
     <!-- D3 -->
     <script defer src="https://d3js.org/d3.v5.min.js"></script>
@@ -13,9 +16,6 @@
   
     <!-- Perceptron code -->
     <script defer src="dist/main.js"></script>
-  
-    <!-- CSS styles -->
-    <link rel="stylesheet" href="./styles.css">
   
     <!-- KaTEX stuff -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.0/dist/katex.min.css" integrity="sha384-BdGj8xC2eZkQaxoQ8nSLefg4AV4/AwB3Fj+8SUSo7pnKP6Eoy18liIKTPn9oBYNG" crossorigin="anonymous"></p>
@@ -27,7 +27,7 @@
 <body>
   <h1>Introduction</h1>
 
-  <p>The perceptron is a well-known machine linear classifier invented in 1958 by Frank Rosenblatt. In the binary classification case, the perceptron is parameterized by a weight vector \(w\) and outputs \(\hat{y_i} = \text{sign}(w \cdot x_i)\) depending on if the class is positive (\(+1\)) or negative (\(-1\)). What makes this model interesting is that <em>if</em> the data we are trying to classify are linearly seperable, then the perceptron learning algorithm will always converge to a set of weights \(w\) which will correctly classify all points.</p>
+  <p>The perceptron is a well-known machine linear classifier invented in 1958 by Frank Rosenblatt. In the binary classification case, the perceptron is parameterized by a weight vector \(w\) and outputs \(\hat{y_i} = \text{sign}(w \cdot x_i)\) depending on if the class is positive (+1) or negative (-1). What makes this model interesting is that <em>if</em> the data we are trying to classify are linearly seperable, then the perceptron learning algorithm will always converge to a set of weights \(w\) which will correctly classify all points.</p>
 
   <p>The perceptron learning algorithm consists of 4 steps:</p>
 
@@ -42,8 +42,8 @@
 
   <div class="graph">
     <div id="scatterplot0"></div>
-    <div>
-      <input class="numPoints" type="number" min="10" max="200" value="50"> points (from 10 to 200)
+    <div class="input-holder">
+      <input type="range" class="numPoints slider" min="10" max="200" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
     </div>
     <br>
     <div>
@@ -195,10 +195,10 @@
   <div class="graph">
     <div id="scatterplot1"></div>
     <div class="input-holder">
-      <input  class="numPoints" type="number" min="10" max="200" value="50"> points (from 10 to 200)
+      <input type="range" class="numPoints slider" min="10" max="200" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
     </div>
     <div class="input-holder">
-      <input  class="margin" type="number" min="0" max="50" value="10"> percent margin (from 0 to 50)
+      <input class="margin slider" type="range" min="0" max="50" value="10"><span class="input-value"></span><span>% margin</span>
     </div>
     <br>
     <div>
@@ -238,13 +238,13 @@
   <div class = "graph">
     <div id="scatterplot2"></div>
     <div class="input-holder">
-      <input type="number" class="numPoints" min="10" max="200" value="50"> points (from 10 to 200)
+      <input type="range" class="numPoints slider" min="10" max="200" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
     </div>
     <div class="input-holder">
-      <input type="number" class="noise" min="0" max="40" value="10"> percent noise (from 0 to 40)
+      <input type="range" class="noise slider" min="0" max="40" value="10"> <span class="input-value"></span><span> % noise</span>
     </div>
     <div class="input-holder">
-      <input type="number" class="k" min="-1" max="1" value="-0.25" step=".05"> k (from -1 to 1)
+      <input type="range" class="k slider" min="-1" max="1" value="-0.25" step=".05"><span class="input-value"></span><span>&nbsp; \(k\)</span>
     </div>
     <br>
     <div>
@@ -259,7 +259,7 @@
 
   <h1>Voted Perceptron</h1>
 
-  <p>Alternatively, if the data are not linearly separable, perhaps we could get better performance using an ensemble of linear classifiers. This is what Yoav Freund and Robert Schapire accomplish in 1999&#39;s <a href="docs/voted_perceptron.pdf">Large Margin Classification Using the Perceptron Algorithm</a>.</p>
+  <p>Alternatively, if the data are not linearly separable, perhaps we could get better performance using an ensemble of linear classifiers. This is what Yoav Freund and Robert Schapire accomplish in 1999&#39;s <a href="docs/voted_perceptron.pdf">Large Margin Classification Using the Perceptron Algorithm</a>. (Unsurprising, if you're aware of their work in boosting.)</p>
 
   <p>There are two main changes to the perceptron algorithm. The first is that, during each iteration when we update our weights \(w_t\), we store it in a list \(W\), along with a vote value \(c_t\), which represents how many data points \(w_t\) classified correctly before it got something wrong (and thus had to be updated). Then, at test time, our prediction for a data point \(x_i\) is the majority vote of all the weights in our list, weighted by their vote. </p>
 
@@ -271,15 +271,17 @@
 
   <div class = "graph">
     <div id="scatterplot3"></div>
+
     <div class="input-holder">
-      <input type="number" class="numPoints" min="10" max="200" value="50"> points (from 10 to 200)
+      <input type="range" class="numPoints slider" min="10" max="200" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
     </div>
     <div class="input-holder">
-      <input type="number" class="noise" min="0" max="40" value="10"> percent noise (from 0 to 40)
+      <input type="range" class="noise slider" min="0" max="40" value="10"> <span class="input-value"></span><span> % noise</span>
     </div>
     <div class="input-holder">
-      <input type="number" class="iters" min="1" max="10" value="5"> iterations (from 1 to 10)
+      <input type="range" class="iters slider" min="1" max="10" value="5"> <span class="input-value"></span><span>&nbsp; iterations</span>
     </div>
+
     <br>
     <div>
       <span class="trueSlope">True slope:</span>
