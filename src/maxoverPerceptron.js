@@ -7,6 +7,7 @@ class MaxoverPerceptron {
     this.weights = [-0.1, 0.1];
     this.weightsList = [];
     this.pointsList = [];
+    this.errList = [];
   }
 
   hopfieldVector(points) {
@@ -103,16 +104,23 @@ class MaxoverPerceptron {
         }
       }
     }
+    for (let w of this.weightsList) {
+      this.errList.push(this.err(w));
+    }
   }
 
-  err() {
+  predict(p, weights) {
+    return(Math.sign(m.dotV(weights, p[0])));
+  }
+
+  err(weights) {
     let numWrong = 0;
     for (let p of this.points) {
-      if (Math.sign(m.dotV(this.weights, p[0])) !== p[1]) {
+      if (this.predict(p, weights) !== p[1]) {
         numWrong++;
       }
     }
-    return(numWrong/this.points.length);
+    return((numWrong/this.points.length).toFixed(3));
   }
 }
 

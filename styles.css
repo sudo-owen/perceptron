@@ -1,40 +1,67 @@
 body {
-  max-width: 45rem;
+  max-width: 43rem;
   margin: auto;
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   line-height: 1.5rem;
   padding-left: 1rem;
   padding-right: 1rem;
+  color: #2e2e2e;
 }
 
 .graph {
   text-align: center;
   padding-bottom: 5rem;
-  padding-top: 1rem;
   max-width: 25rem;
   margin: auto;
 }
 
 .hyperplane {
-  stroke: #5f7463;
+  stroke: #4e6370;
   stroke-width: 1;
 }
 
 .selectedLine {
   stroke: rgb(236, 205, 25) !important;
-  stroke-width: 2 !important;
+  stroke-width: 2;
+  opacity: 1;
+}
+
+.transparent {
+  stroke: grey;
+  opacity: 0.1;
+}
+
+.trueSlope, .learnedSlope, .vpText, .iteration, .error {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.iteration {
+  fill: #777777;
+}
+
+.error {
+  fill: rgb(201, 120, 120);
+}
+
+.learnedSlope {
+  fill: #3e7c8f !important;
 }
 
 h1 {
   margin-top: 3rem;
   line-height: 3rem;
-  font-size: 2.5rem;
+  font-size: 2.3rem;
+  color: #3d79b4;
+  margin-bottom: -0.5rem;
 }
 
 h3 {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   margin-top: 3.5rem;
+  color: #2e5379;
 }
 
 input, button {
@@ -42,11 +69,40 @@ input, button {
 }
 
 button {
+  font-size: 0.9rem;
   cursor: pointer;
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
+  width: 9rem;
+  border: 0.075rem solid #2c537a;
+  border-radius: 2px;
+}
+
+button:hover {
+  box-shadow: 1px 1px 3px 0 #e7e5e5;
+}
+
+.fit-button {
+  background-color: white;
+  color: #4c739b;
+}
+
+.fit-button:hover {
+  background-color: #ddeeff;
+}
+
+.generate-button {
+  background-color: #2d557c;
+  color: white;
+}
+
+.generate-button:hover {
+  background-color: #4f78a1;
+  border-color: #486e94;
 }
 
 .slider {
-  width: 10rem;
+  width: 12rem;
   margin-top: 0.2rem;
   margin-right: 1rem;
 }
@@ -57,5 +113,13 @@ button {
   text-align: left;
   display: flex;
   align-items: center;
-  margin-left: 5rem;
+  margin-left: 3rem;
+}
+
+.input-value {
+  font-weight: bold;
+}
+
+.button-holder {
+  margin-top: 1.5rem;
 }

@@ -10,7 +10,7 @@ export function createGraph(id) {
   .append("svg")
   // .attr("width", width + margin.left + margin.right)
   // .attr("height", height + margin.top + margin.bottom)
-  .attr("viewBox", "0 -20 " + 440 + " " + 350 )
+  .attr("viewBox", "0 -20 " + 440 + " " + 400 )
   .attr("preserveAspectRatio", "xMidYMid meet")
   .append("g")
   .attr("transform",
@@ -31,7 +31,42 @@ export function createGraph(id) {
     svg.append("g")
     .call(d3.axisLeft(y));
   
+  createGraphText(svg, x, y);
+
   return([svg, x, y]);
+}
+
+// TODO: Move the awkward positioning here into CSS
+export function createGraphText(svg, x, y) {
+  let graphText = svg.append("g")
+                      .attr("class", "graphText")
+                      .attr("transform", "translate(0" + "," + (height + 50) + ")");
+  graphText.append("text")
+            .attr("class", "trueSlope")
+            .text("True slope: ");
+  graphText.append("text")
+            .attr("class", "learnedSlope")
+            .attr("transform", "translate(0," + 25 + ")")
+            .text("Learned slope: ");
+  graphText.append("text")
+            .attr("class", "iteration")
+            .attr("transform", "translate(" + 210 + ",0)")
+            .text("Iteration: ");
+  graphText.append("text")
+            .attr("class", "error")
+            .attr("transform", "translate(" + 210 + ",25)")
+            .text("Error: ");
+}
+
+export function resetGraphText(svg, slope) {
+  svg.select(".trueSlope")
+    .text("True slope: " + slope);
+  svg.select(".learnedSlope")
+    .text("Learned slope: ");
+  svg.select(".iteration")
+    .text("Iteration: ")
+  svg.select(".error")
+    .text("Error: ")
 }
 
 export function resetLine(svg, x, y) {
@@ -59,53 +94,46 @@ export function scatter(chart, points, x, y) {
       let id = "c" + x + y;
       return(id);
     })
-    .style("fill", function(d) {
-      if (d[1] == 1) {
-        return("#EE5C42");
-      }
-      else {
-        return("#0198E1");
-      }
-  });
+    .style("fill", function(d) { return((d[1] == 1) ? "#EE5C42" : "#0198E1")});
 }
 
 function plotLine(svg, model, xVal, slope, x, y, i) {
-  let vote = model.votesList[i];
-  svg.append('line')
-    .style("stroke", "#7e7e7e")
-    .attr('x1', 0)
-    .attr('y1', height)
-    .attr("x2", x(xVal))
-    .attr("y2", y(slope*xVal))
-    .style("stroke", function(d) {
-      return(d3.interpolateLab("white", "black")(vote/model.maxVote));
-    })
-    .style("stroke-width", function(d) {
-      return(1 + vote/model.maxVote);
-    })
-    .style("opacity", function(d) {
-      return(0.75);
-    })
-    .on("mouseenter", function(d) {
-      d3.select(this)
-        .attr("class", "selectedLine")
-      d3.select(this.parentNode)
-        .append("text")
-        .attr("class", "vpText")
-        .attr("x", 10)
-        .attr("y", -10)
-        .text(function(d) {
-          return("Votes: " + vote);
-        })
-    })
-    .on("mouseout", function() {
-      d3.selectAll(".vpText").remove();
-      d3.select(this)
-        .style("stroke", function(d) {
-        return(d3.interpolateLab("#d9d9d9", "#0d0d0d")(vote/model.maxVote));
-        })
-        .attr("class", "");
-    });
+  if (slope > 0) {
+    let vote = model.votesList[i];
+    svg.append('line')
+      .style("stroke", "#7e7e7e")
+      .attr('x1', 0)
+      .attr('y1', height)
+      .attr("x2", x(xVal))
+      .attr("y2", y(slope*xVal))
+      .style("stroke", function(d) {
+          return(d3.interpolateLab("white", "black")(vote/model.maxVote));
+      })
+      .style("stroke-width", function(d) {
+        return(1 + vote/model.maxVote);
+      })
+      .style("opacity", function(d) { return(0.75); })
+      .on("mouseenter", function(d) {
+        d3.select(this)
+          .attr("class", "selectedLine")
+        d3.select(this.parentNode)
+          .append("text")
+          .attr("class", "vpText")
+          .attr("x", 10)
+          .attr("y", -10)
+          .text(function(d) {
+            return("Votes: " + vote);
+          })
+      })
+      .on("mouseout", function() {
+        d3.selectAll(".vpText").remove();
+        d3.select(this)
+          .style("stroke", function(d) {
+          return(d3.interpolateLab("#d9d9d9", "black")(vote/model.maxVote));
+          })
+          .attr("class", "");
+      });
+  }
 }
 
 export function showTraining(svg, lineId, slopeText, x, y, i, model) {
@@ -116,11 +144,31 @@ export function showTraining(svg, lineId, slopeText, x, y, i, model) {
   slopeText.text("Learned slope: " + (slope).toFixed(3) + " Iteration: " + (i+1) + "/" + wList.length);
   let pointId = ("#c" + model.pointsList[i][0].toString().replace('.','') 
     + model.pointsList[i][1].toString().replace('.',''));
-  let xVal = 1;
+  
+  // Avoid hyperplanes from stretching past y = 1
+    let xVal = 1;
   if (slope > 1) {
     xVal = 1/slope;
   }
 
+  svg.select(".error")
+    .transition()
+      .duration(10)
+      .text("Error: " + model.errList[i])
+      .end()
+      .then(() => {
+  svg.select(".iteration")
+    .transition()
+      .duration(10)
+      .text("Iteration: " + (i+1) + "/" + wList.length)
+      .end()
+      .then(() => {
+  svg.select(".learnedSlope")
+    .transition()
+      .duration(10)
+      .text(() => "Learned slope: " + slope.toFixed(3))
+      .end()
+      .then(() => {
   svg.select(pointId)
     .transition()
       .delay(2 * timeUnit)
@@ -141,20 +189,14 @@ export function showTraining(svg, lineId, slopeText, x, y, i, model) {
       .duration(10 * timeUnit)
       .attr("x2", x(xVal))
       .attr("y2", y(slope*xVal))
+      .style("opacity", function(d) { return((slope < 0) ? 0.2 : 0.9); })
     .end()
     .then(() => {
   svg.select(pointId)
   .transition()
     .duration(5 * timeUnit)
     .attr("r", 3.0)
-    .style("fill", function(d) {
-      if (d[1] == 1) {
-        return("#EE5C42");
-      }
-      else {
-        return("#0198E1");
-      }
-    })
+    .style("fill", function(d) {return((d[1] == 1) ? "#EE5C42" : "#0198E1"); })
     .end()
     .then(() => {
       if (model instanceof VotedPerceptron) {
@@ -163,8 +205,11 @@ export function showTraining(svg, lineId, slopeText, x, y, i, model) {
       if (i+1 < wList.length) {
         showTraining(svg, lineId, slopeText, x, y, i+1, model);
       }
-     })
-    });
+  });
+  });
+  });
+  });
+  });
   });
 }
 

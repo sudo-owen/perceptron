@@ -43,17 +43,13 @@
   <div class="graph">
     <div id="scatterplot0"></div>
     <div class="input-holder">
-      <input type="range" class="numPoints slider" min="10" max="200" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
+      <input type="range" class="numPoints slider" min="10" max="150" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
     </div>
-    <br>
-    <div>
-      <span class="trueSlope">True slope:</span>
-      <br>
-      <span class="predSlope">Learned slope:</span>
+    
+    <div class="button-holder">
+      <button id="generate0" class="generate-button">Generate Data</button>
+      <button id="fit0" class="fit-button">Fit Perceptron</button>
     </div>
-    <br>
-    <button id="generate0">Generate Data</button>
-    <button id="fit0">Fit Perceptron</button>
   </div>
 
   <h1>Convergence Proof</h1>
@@ -195,20 +191,16 @@
   <div class="graph">
     <div id="scatterplot1"></div>
     <div class="input-holder">
-      <input type="range" class="numPoints slider" min="10" max="200" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
+      <input type="range" class="numPoints slider" min="10" max="150" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
     </div>
     <div class="input-holder">
       <input class="margin slider" type="range" min="0" max="50" value="10"><span class="input-value"></span><span>% margin</span>
     </div>
-    <br>
-    <div>
-      <span class="trueSlope">True slope:</span>
-      <br>
-      <span class="predSlope">Learned slope:</span>
+    
+    <div class="button-holder">
+      <button id="generate1" class="generate-button">Generate Data</button>
+      <button id="fit1" class="fit-button">Fit Perceptron</button>
     </div>
-    <br>
-    <button id="generate1">Generate Data</button>
-    <button id="fit1">Fit Perceptron</button>
   </div>
 
   <h1>Linearly Unseparable Data</h1>
@@ -238,7 +230,7 @@
   <div class = "graph">
     <div id="scatterplot2"></div>
     <div class="input-holder">
-      <input type="range" class="numPoints slider" min="10" max="200" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
+      <input type="range" class="numPoints slider" min="10" max="150" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
     </div>
     <div class="input-holder">
       <input type="range" class="noise slider" min="0" max="40" value="10"> <span class="input-value"></span><span> % noise</span>
@@ -246,15 +238,11 @@
     <div class="input-holder">
       <input type="range" class="k slider" min="-1" max="1" value="-0.25" step=".05"><span class="input-value"></span><span>&nbsp; \(k\)</span>
     </div>
-    <br>
-    <div>
-      <span class="trueSlope">True slope:</span>
-      <br>
-      <span class="predSlope">Learned slope:</span>
+    
+    <div class="button-holder">
+      <button id="generate2" class="generate-button">Generate Data</button>
+      <button id="fit2" class="fit-button">Fit Perceptron</button>
     </div>
-    <br>
-    <button id="generate2">Generate Data</button>
-    <button id="fit2">Fit Perceptron</button>
   </div>  
 
   <h1>Voted Perceptron</h1>
@@ -273,7 +261,7 @@
     <div id="scatterplot3"></div>
 
     <div class="input-holder">
-      <input type="range" class="numPoints slider" min="10" max="200" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
+      <input type="range" class="numPoints slider" min="10" max="150" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
     </div>
     <div class="input-holder">
       <input type="range" class="noise slider" min="0" max="40" value="10"> <span class="input-value"></span><span> % noise</span>
@@ -282,15 +270,10 @@
       <input type="range" class="iters slider" min="1" max="10" value="5"> <span class="input-value"></span><span>&nbsp; iterations</span>
     </div>
 
-    <br>
-    <div>
-      <span class="trueSlope">True slope:</span>
-      <br>
-      <span class="predSlope">Learned slope:</span>
-    </div>
-    <br>
-    <button id="generate3">Generate Data</button>
-    <button id="fit3">Fit Perceptron</button>
+    <div class="button-holder">
+      <button id="generate3" class="generate-button">Generate Data</button>
+      <button id="fit3" class="fit-button">Fit Perceptron</button>
+    </div>  
   </div>  
 
 </body>

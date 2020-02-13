@@ -18,11 +18,6 @@ function validRange(input, n) {
   return(n <= max && n >= min);
 }
 
-function setSlopes(parentGraph, trueSlope) {
-  parentGraph.find(".trueSlope").text("True slope: " + trueSlope);
-  parentGraph.find(".predSlope").text("Learned slope: ");
-}
-
 function fitPerceptron(parentGraph, index) {
   let [graph, x, y] = graphs[index];
   models[index].train();
@@ -43,7 +38,6 @@ $(function() {
   initInput();
   $(".slider").on("input", function() {
     let initVal = $(this).val();
-    console.log(initVal);
     $(this).siblings(".input-value").text(initVal);
   });
 
@@ -61,8 +55,8 @@ $(function() {
     if (validRange(input, n)) {
       let [trueSlope, points] = m.getPoints(n);
       g.resetLine(graph, x, y);
+      g.resetGraphText(graph, trueSlope);
       g.scatter(graph, points, x, y);
-      setSlopes(parentGraph, trueSlope);
       models[index] = new Perceptron(points);
     }
   });
@@ -81,8 +75,8 @@ $(function() {
       let margin = (100 - parentGraph.find(".margin").val())/100;
       let [trueSlope, points] = m.getPoints(n, margin);
       g.resetLine(graph, x, y);
+      g.resetGraphText(graph, trueSlope);
       g.scatter(graph, points, x, y);
-      setSlopes(parentGraph, trueSlope);
       models[index] = new Perceptron(points);
     }
   });
@@ -103,8 +97,8 @@ $(function() {
       let noise = (parentGraph.find(".noise").val()/100);
       m.flipLabels(points, noise);
       g.resetLine(graph, x, y);
+      g.resetGraphText(graph, trueSlope);
       g.scatter(graph, points, x, y);
-      setSlopes(parentGraph, trueSlope);
       models[index] = new MaxoverPerceptron(points);
     }
   });
@@ -125,8 +119,8 @@ $(function() {
       let noise = (parentGraph.find(".noise").val()/100);
       m.flipLabels(points, noise);
       g.resetLine(graph, x, y);
+      g.resetGraphText(graph, trueSlope);
       g.scatter(graph, points, x, y);
-      setSlopes(parentGraph, trueSlope);
       models[index] = new VotedPerceptron(points, iters);
     }
   });

@@ -9,9 +9,13 @@ The perceptron learning algorithm consists of 4 steps:
 3. If a point $(x_t, y_t)$ is misclassified, update the weight $w_i$ with the following rule: $w_{i+1} = w_i + y_t(x_t)^T$. In other words, we add (or subtract) the misclassified point's value to (or from) our weights.
 4. Go back to step 2 until all points are classified correctly.
 
-To get a feel for what I mean, try out the interactive demo below. What happens is that a random hyperplane is selected, and then points are randomly generated on both sides. You can see the model update its decision boundary for each misclassified point, which flashes briefly.
+To get a feel for what I mean, try out the interactive demo below.
 
-**Demo 1**
+Clicking Generate Points will pick a random hyperplane (that goes through 0, for simplicity) to be the ground truth. Then, points are randomly generated on both sides of the hyperplane with respective +1 or -1 labels. 
+
+After that, you can click Fit Perceptron to fit the model for the data. You can see each misclassified point flash briefly, moving the perceptron's weights either up or down, respectively throughout the training procedure.
+
+**DEMO GOES HERE**
 
 # Convergence Proof
 
@@ -40,7 +44,7 @@ Next, multiplying out the right hand side, we get:
 
  $w_{k+1}\cdot (w^*)^T = w_k \cdot (w^*)^T + y_t(w^* \cdot x_t)$
 
-By assumption 2, we get, as desired:
+By assumption 1, we get, as desired:
 
  $w_{k+1}\cdot (w^*)^T \ge w_k \cdot (w^*)^T + \epsilon$ 
 
@@ -144,14 +148,14 @@ Thus, we see that our algorithm will run for no more than $\frac{R^2}{\epsilon^2
 
 It's interesting to note that our convergence proof does not explicity depend on the dimensionality of our data points. Rather, the runtime depends on the size of the margin between the closest point and the separating hyperplane. 
 
-In other words, the difficulty of the problem is bounded by how easily separable the two classes are. The larger the margin, the faster the perceptron should converge. Below, you can try adjusting the margin between the two classes to see how increasing/decreasing it changes how fast the perceptron converges.
+In other words, the difficulty of the problem is bounded by how easily separable the two classes are. The larger the margin, the faster the perceptron should converge. Below, you can try adjusting the margin between the two classes to see how increasing or decreasing it changes how fast the perceptron converges.
 
-**DEMO 2**
+**DEMO GOES HERE**
 
 # Linearly Unseparable Data
 In the real world, data is never clean; it's noisy, and the linear separability assumption we made is basically never achieved. But, as we saw above, the size of the margin that separates the two classes is what allows the perceptron to converge at all. So the normal perceptron learning algorithm gives us no guarantees on how good it will perform on noisy data. 
 
-However, there are several modifications to the perceptron algorithm which enable it to do well, even when the data is not linearly separable. Below, we'll explore the Maxover algorithm and the Voted Perceptron.
+However, there are several modifications to the perceptron algorithm which enable it to do relatively well, even when the data is not linearly separable. Below, we'll explore the Maxover algorithm and the Voted Perceptron.
 
 # Maxover Algorithm
 
@@ -167,13 +171,13 @@ Each one of the modifications uses a different selection criteria for selecting 
 
 $\frac{y^*(w_t \cdot x^*)}{||w_t||} < k$ 
 
-This is the version you can play with below. Note the value of $k$ is a tweakable hyperparameter; I've merely set it to default to -0.25 below because that's what worked well for me when I was playing around. The error rate is also displayed once the perceptron is done training. Given a noise proportion of $p$, we'd ideally like to get an error rate as close to $p$ as possible.
+This is the version you can play with below. Note the value of $k$ is a tweakable hyperparameter; I've merely set it to default to -0.25 below because that's what worked well for me when I was playing around. The error rate is also displayed once the perceptron is done training. Given a noise proportion of $p$, we'd ideally like to get an error rate as close to $p$ as possible. We'd also ideally like to get a separating hyperplane that is close to the original one, and note that minimizing the error on noisy samples does not automatically achieve this goal.
 
 **DEMO GOES HERE**
 
 # Voted Perceptron
 
-Alternatively, if the data are not linearly separable, perhaps we could get better performance using an ensemble of linear classifiers. This is what Yoav Freund and Robert Schapire accomplish in 1999's [Large Margin Classification Using the Perceptron Algorithm](docs/voted_perceptron.pdf).
+Alternatively, if the data are not linearly separable, perhaps we could get better performance using an ensemble of linear classifiers. This is what Yoav Freund and Robert Schapire accomplish in 1999's [Large Margin Classification Using the Perceptron Algorithm](docs/voted_perceptron.pdf). (If you are familiar with their other work on boosting, their ensemble algorithm here is unsurprising.)
 
 There are two main changes to the perceptron algorithm. The first is that, during each iteration when we update our weights $w_t$, we store it in a list $W$, along with a vote value $c_t$, which represents how many data points $w_t$ classified correctly before it got something wrong (and thus had to be updated). Then, at test time, our prediction for a data point $x_i$ is the majority vote of all the weights in our list, weighted by their vote. 
 
@@ -181,6 +185,6 @@ In other words, $\hat{y_i} = \text{sign}(\sum_{w_j \in W} c_j(w \cdot x_i))$
 
 Though it's both intuitive and easy to implement, the analyses for the Voted Perceptron do not extend past running it just once through the training set. However, we empirically see that performance continues to improve if we make multiple passes through the training set and thus extend the length of $W$. 
 
-Below, you can see this for yourself by changing the number of iterations the Voted Perceptron runs for, and then seeing the resulting error rate.
+Below, you can see this for yourself by changing the number of iterations the Voted Perceptron runs for, and then seeing the resulting error rate. During the training animation, each hyperplane in $W$ is overlaid on the graph, with an intensity proportional to its vote. You can also hover a specific hyperplane to see the number of votes it got. Typically, the points with high vote are the ones which are close to the original line; with minimal noise, we'd expect something close to the original separating hyperplane to get most of the points correct. 
 
 **DEMO GOES HERE**

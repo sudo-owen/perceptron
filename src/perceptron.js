@@ -7,7 +7,8 @@ class Perceptron {
     this.points = points;
     this.weightsList = [];
     this.pointsList = [];
-    this.maxIterations = this.points.length;
+    this.maxIterations = Math.max(50, this.points.length*2);
+    this.errList = [];
   }
 
   updateWeights() {
@@ -33,6 +34,23 @@ class Perceptron {
         break;
       }
     }
+    for (let w of this.weightsList) {
+      this.errList.push(this.err(w));
+    }
+  }
+
+  predict(p, weights) {
+    return(Math.sign(m.dotV(weights, p[0])));
+  }
+
+  err(weights) {
+    let numWrong = 0;
+    for (let p of this.points) {
+      if (this.predict(p, weights) !== p[1]) {
+        numWrong++;
+      }
+    }
+    return((numWrong/this.points.length).toFixed(3));
   }
 }
 
