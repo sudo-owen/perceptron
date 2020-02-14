@@ -30,6 +30,9 @@ function initInput() {
     let initVal = $(this).val();
     $(this).siblings(".input-value").text(initVal);
   });
+
+  // Initialize default m/s
+  window.timeUnit = $(".animationSpeed").val();
 }
 
 // JQuery onready
@@ -39,6 +42,11 @@ $(function() {
   $(".slider").on("input", function() {
     let initVal = $(this).val();
     $(this).siblings(".input-value").text(initVal);
+  });
+
+  $(".animationSpeed").on("input", function() {
+    let time = $(this).val();
+    window.timeUnit = time;
   });
 
   /*

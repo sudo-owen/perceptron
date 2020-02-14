@@ -137,7 +137,7 @@ function plotLine(svg, model, xVal, slope, x, y, i) {
 }
 
 export function showTraining(svg, lineId, slopeText, x, y, i, model) {
-  let timeUnit = 50;
+  let timeUnit = window.timeUnit;
   let wList = model.weightsList;
   let weights = wList[i];
   let slope = -weights[0]/weights[1];

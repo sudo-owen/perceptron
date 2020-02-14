@@ -20,13 +20,13 @@ class VotedPerceptron {
       let p = this.points[i];
       let label = p[1];
       if (Math.sign(m.dotV(this.weights, p[0])) != label) {
-        this.weights = m.addV(this.weights, p[0].map(x => x * label));
         if (vote > 0) {
           this.weightsList.push(this.weights);
           this.votesList.push(vote);
           vote = 0;
           this.pointsList.push(p[0]);
         }
+        this.weights = m.addV(this.weights, p[0].map(x => x * label));
       }
       else {
         vote += 1;
@@ -39,19 +39,11 @@ class VotedPerceptron {
       this.updateWeights();
     }
     this.maxVote = Math.max(...this.votesList);
-    // let avgWlist = []
-    // let avg = [0,0];
-    // for (let i = 0; i < this.weightsList.length; i++) {
-    //   let w = this.weightsList[i];
-    //   avg = m.addV(avg, w.map((x) => x*this.votesList[i]));
-    //   avgWlist.push(avg);
-    // }
-    // Get averaged weights
-    // for (let w of avgWlist) {
-    //   this.errList.push(this.err(w));
-    // }
-    // Set last value to be the real ensemble prediction
-    //this.errList[this.errList.length-1] = this.errFinal();
+    for (let w of this.weightsList) {
+      this.errList.push(this.err(w, true));
+    }
+    this.errList[this.errList.length-1] = this.err(this.weights, false) + "(total)";
+
   }
 
   predictSimple(p, weights) {
@@ -61,26 +53,15 @@ class VotedPerceptron {
   predict(p) {
     let total = 0;
     for (let i = 0; i < this.weightsList.length; i++) {
-      total += this.votesList[i]*(m.dotV(this.weightsList[i], p[0]));
+      total += this.votesList[i]*(this.predictSimple(p, this.weightsList[i]));
     }
     return(Math.sign(total));
   }
 
-  errFinal() {
+  err(weights, useSimple) {
     let numWrong = 0;
     for (let p of this.points) {
-      let prediction = this.predict(p);
-      if (prediction !== p[1]) {
-        numWrong++;
-      }
-    }
-    return((numWrong/this.points.length).toFixed(3));
-  }
-
-  err(weights) {
-    let numWrong = 0;
-    for (let p of this.points) {
-      let prediction = this.predictSimple(p, weights);
+      let prediction = useSimple ? this.predictSimple(p, weights) : this.predict(p);
       if (prediction !== p[1]) {
         numWrong++;
       }

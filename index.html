@@ -16,6 +16,9 @@
   
     <!-- Perceptron code -->
     <script defer src="dist/main.js"></script>
+
+    <!-- Muli font -->
+    <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet"> 
   
     <!-- KaTEX stuff -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.0/dist/katex.min.css" integrity="sha384-BdGj8xC2eZkQaxoQ8nSLefg4AV4/AwB3Fj+8SUSo7pnKP6Eoy18liIKTPn9oBYNG" crossorigin="anonymous"></p>
@@ -25,257 +28,329 @@
     <title>Perceptrons Explained</title>
   </head>
 <body>
-  <h1>Introduction</h1>
 
-  <p>The perceptron is a well-known machine linear classifier invented in 1958 by Frank Rosenblatt. In the binary classification case, the perceptron is parameterized by a weight vector \(w\) and outputs \(\hat{y_i} = \text{sign}(w \cdot x_i)\) depending on if the class is positive (+1) or negative (-1). What makes this model interesting is that <em>if</em> the data we are trying to classify are linearly seperable, then the perceptron learning algorithm will always converge to a set of weights \(w\) which will correctly classify all points.</p>
+<h1 class="topHeading">Introduction</h1>
 
-  <p>The perceptron learning algorithm consists of 4 steps:</p>
+<p>The perceptron is a linear classifier invented in 1958 by Frank Rosenblatt. It&#39;s very well-known and often one of the first things covered in a classical machine learning course. So why create another overview of this topic?</p>
 
-  <ol>
-  <li>Initialize a set of starting weights \(w_1 = [0...0]\).</li>
-  <li>Run the model on your dataset until you hit the first misclassified point.</li>
-  <li>If a point \((x_t, y_t)\) is misclassified, update the weight \(w_i\) with the following rule: \(w_{i+1} = w_i + y_t(x_t)^T\). In other words, we add (or subtract) the misclassified point&#39;s value to (or from) our weights.</li>
-  <li>Go back to step 2 until all points are classified correctly.</li>
-  </ol>
+<p>Well, I couldn&#39;t find any projects online which brought together:</p>
 
-  <p>To get a feel for what I mean, try out the interactive demo below. What happens is that a random hyperplane is selected, and then points are randomly generated on both sides. You can see the model update its decision boundary for each misclassified point, which flashes briefly.</p>
+<ol>
+<li>Visualizations of the perceptron learning in real time.</li>
+<li>A proof of why the perceptron learns at all.</li>
+<li>Explorations into ways to extend the default perceptron algorithm.</li>
+</ol>
 
-  <div class="graph">
-    <div id="scatterplot0"></div>
-    <div class="input-holder">
-      <input type="range" class="numPoints slider" min="10" max="150" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
-    </div>
-    
-    <div class="button-holder">
-      <button id="generate0" class="generate-button">Generate Data</button>
-      <button id="fit0" class="fit-button">Fit Perceptron</button>
-    </div>
+<p>To be clear, these all exist in different places, but I wanted to put them together and create some slick visualizations with d3.</p>
+
+<p>If you&#39;re new to all this, here&#39;s an overview of the perceptron:</p>
+
+<p>In the binary classification case, the perceptron is parameterized by a weight vector \(w\) and, given a data point \(x_i\), outputs \(\hat{y_i} = \text{sign}(w \cdot x_i)\) depending on if the class is positive (\(+1\)) or negative (\(-1\)). What makes th perceptron interesting is that <em>if</em> the data we are trying to classify are linearly separable, then the perceptron learning algorithm will always converge to a vector of weights \(w\) which will correctly classify all points, putting all the +1s to one side and the -1s on the other side.</p>
+
+<p>The perceptron learning algorithm can be broken down into 3 simple steps:</p>
+
+<ol>
+<li>Initialize a vector of starting weights \(w_1 = [0...0]\)</li>
+<li>Run the model on your dataset until you hit the first misclassified point, i.e. where \(\hat{y_i} \not= y_i\)</li>
+<li>When a point \((x_i, y_i)\) is misclassified, update the weights \(w_t\) with the following rule: \(w_{t+1} = w_t + y_i(x_i)^T\). In other words, we add (or subtract) the misclassified point&#39;s value to (or from) our weights.</li>
+<li>Go back to step 2 until all points are classified correctly.</li>
+</ol>
+
+<p>To get a feel for the algorithm, I&#39;ve set up an demo below.</p>
+
+<p>Clicking <code>Generate Points</code> will pick a random hyperplane (that goes through 0, once again for simplicity) to be the ground truth. Then, points are randomly generated on both sides of the hyperplane with respective +1 or -1 labels. </p>
+
+<p>After that, you can click <code>Fit Perceptron</code> to fit the model for the data. You can see each misclassified point flash briefly, moving the perceptron&#39;s weights either up or down, respectively throughout the training procedure.</p>
+
+<p>At each iteration of the algorithm, you can see the current slope of \(w_t\) as well as its error on the data points.</p>
+
+<p>Because all of the data generated are linearly separable, the end error should always be 0. However, note that the learned slope will still differ from the true slope! This is because the perceptron is only guaranteed to converge to a \(w\) that gets 0 error on the training data, <em>not</em> the ground truth hyperplane. </p>
+
+<p>You can also use the slider below to control how fast the animations are for all of the charts on this page.</p>
+
+<div class="animation-holder">
+  <span class="speedBg">
+  <span class="speedLabel">Global Animation Speed</span>
+  <input type="range" class="animationSpeed slider" min="10" max="100" value="50" step="10"><span class="input-value"></span><span >&nbsp; ms / frame</span>
+  </span>
+</div>
+
+<div class="graph">
+  <div id="scatterplot0"></div>
+  <div class="input-holder">
+    <input type="range" class="numPoints slider" min="10" max="150" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
   </div>
-
-  <h1>Convergence Proof</h1>
-
-  <p>While the above demo gives some good visual evidence that \(w\) always converges to a line which separates our points, there is also a formal proof that adds some useful insights. For the proof, we&#39;ll consider running our algorithm for \(k\) iterations and then show that \(k\) is upper bounded by a finite value, meaning our algorithm will always return a good \(w\) in finite time.</p>
-
-  <p>Before we begin, let&#39;s make our assumptions clear:</p>
-
-  <ol>
-  <li>There exists some optimal \(w^*\)  such that for some \(\epsilon &gt; 0\), \(y_i(w^* \cdot x_i) \ge \epsilon\) for all inputs on the training set. In other words, we assume the points are linearly separable with a margin of \(\epsilon\) (as long as our hyperplane is normalized). </li>
-  <li>\(||w^*|| = 1\). Though not strictly necessary, this gives us a unique \(w^*\) and makes the proof simpler.</li>
-  <li>For all \(x_i\) in our dataset \(X\), \(||x_i|| &lt; R\). In other words, this bounds the coordinates of our points.</li>
-  </ol>
-
-  <h3>Inequality 1</h3>
-
-  <p>First, let \(w^{k+1}​\) be the set of weights returned by our algorithm after running it for \(k+1​\) iterations.</p>
-
-  <p>We&#39;ll start by showing that:</p>
-
-  <p>\(w_{k+1} \cdot (w^*)^T \ge w_k \cdot (w^*)^T + \epsilon\)</p>
-
-  <p>By definition, if we assume that \(w_{k}\) misclassified \((x_t, y_t)\), we update \(w_{k+1} = w_k + y_t(x_t)^T \)</p>
-
-  <p>Thus:</p>
-
-  <p>\(w_{k+1}\cdot (w^*)^T = (w_k + y_t(x_t)^T)\cdot (w^*)^T\) </p>
-
-  <p>Next, multiplying out the right hand side, we get:</p>
-
-  <p>\(w_{k+1}\cdot (w^*)^T = w_k \cdot (w^*)^T + y_t(w^* \cdot x_t)\)</p>
-
-  <p>By assumption 2, we get, as desired:</p>
-
-  <p>\(w_{k+1}\cdot (w^*)^T \ge w_k \cdot (w^*)^T + \epsilon\) </p>
-
-  <p>Next, we&#39;ll prove by induction that:</p>
-
-  <p>\(w^{k+1} \cdot (w^*)^T \ge k\epsilon \)</p>
-
-  <p>Base case where \(k = 0\):</p>
-
-  <p>\(w^{0+1} \cdot w^* = 0 \ge 0 * \epsilon = 0\)</p>
-
-  <p>Inductive step where \(k \to k+1\):</p>
-
-  <p>From what we proved above, we get:</p>
-
-  <p>\(w^{k+1} \cdot (w^*)^T \ge w_k \cdot (w^*)^T + \epsilon\)</p>
-
-  <p>Then, from the inductive hypothesis, we get:</p>
-
-  <p>\(w^{k+1} \cdot (w^*)^T \ge (k-1)\epsilon + \epsilon\)</p>
-
-  <p>Which gets us, as desired:</p>
-
-  <p>\(w^{k+1} \cdot (w^*)^T \ge k\epsilon\)</p>
-
-  <p>Next, we see that:</p>
-
-  <p>\(w^{k+1} \cdot (w^*)^T = ||w^{k+1}|| * ||w^*||*cos(w^{k+1}, w^*)\)</p>
-
-  <p>Because \(cos(x) \le 1\), we see that:</p>
-
-  <p>\(w^{k+1} \cdot (w^*)^T \le ||w^{k+1}||*||w^*||\)</p>
-
-  <p>Then, because \(||w^*|| = 1\) by assumption 2, we have that:</p>
-
-  <p>\(||w^{k+1}|| \ge k\epsilon\)</p>
-
-  <p>Because all values on both sides are positive, we also get:</p>
-
-  <p>\(||w^{k+1}||^2 \ge k^2\epsilon^2\)</p>
-
-  <h3>Inequality 2</h3>
-
-  <p>First, we notice that:</p>
-
-  <p>\(||w_{k+1}||^2 = ||w_{k} + y_t (x_t)^T||^2\)</p>
-
-  <p>Multiplying this out, we get:</p>
-
-  <p>\(||w_{k+1}||^2 = ||w_k||^2 + 2y_t (w_k \cdot x_t) + ||x_k||^2\)</p>
-
-  <p>Then, because we updated on point \((x_t, y_t)\), we know that it was classified incorrectly. Thus, \(2y_t(w_k \cdot x_t) &lt; 0\).</p>
-
-  <p>Thus:</p>
-
-  <p>\(||w_{k+1}||^2 \le ||w_k||^2 + ||x_k||^2\)</p>
-
-  <p>Then, by assumption 3, we know that:</p>
-
-  <p>\(R \ge ||x_k||\)</p>
-
-  <p>Thus:</p>
-
-  <p>\(||w_{k+1}||^2 \le ||w_k||^2 + R^2\)</p>
-
-  <p>Now, we&#39;ll prove by induction that:</p>
-
-  <p>\(||w_{k+1}||^2 \le kR^2\)</p>
-
-  <p>Base case, where \(k=0\):</p>
-
-  <p>\(||w_{0+1}||^2  = 0 \le 0*R^2 = 0\)</p>
-
-  <p>Inductive step, where \(k \to k+1\):</p>
-
-  <p>From what we proved above:</p>
-
-  <p>\(||w_{k+1}||^2 \le ||w_k||^2 + R^2 \)</p>
-
-  <p>Then, by the inductive hypothesis:</p>
-
-  <p>\(||w_{k+1}||^2 \le (k-1)R^2 + R^2\)</p>
-
-  <p>Which gets us, as desired:</p>
-
-  <p>\(||w_{k+1}||^2 \le kR^2\)</p>
-
-  <h3>Putting It Together</h3>
-
-  <p>From Inequalities 1 and 2, we get:</p>
-
-  <p>\(k^2\epsilon^2 \le ||w_{k+1}||^2 \le kR^2\)</p>
-
-  <p>Dividing out, we get:</p>
-
-  <p>\(k \le \frac{R^2}{\epsilon^2}\)</p>
-
-  <p>Thus, we see that our algorithm will run for no more than \(\frac{R^2}{\epsilon^2}\) iterations. </p>
-
-  <h3>Changing the Margin</h3>
-
-  <p>It&#39;s interesting to note that our convergence proof does not explicity depend on the dimensionality of our data points. Rather, the runtime depends on the size of the margin between the closest point and the separating hyperplane. </p>
-
-  <p>In other words, the difficulty of the problem is bounded by how easily separable the two classes are. The larger the margin, the faster the perceptron should converge. Below, you can try adjusting the margin between the two classes to see how increasing/decreasing it changes how fast the perceptron converges.</p>
-
-  <div class="graph">
-    <div id="scatterplot1"></div>
-    <div class="input-holder">
-      <input type="range" class="numPoints slider" min="10" max="150" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
-    </div>
-    <div class="input-holder">
-      <input class="margin slider" type="range" min="0" max="50" value="10"><span class="input-value"></span><span>% margin</span>
-    </div>
-    
-    <div class="button-holder">
-      <button id="generate1" class="generate-button">Generate Data</button>
-      <button id="fit1" class="fit-button">Fit Perceptron</button>
-    </div>
+  <div class="button-holder">
+    <button id="generate0" class="generate-button">Generate Data</button>
+    <button id="fit0" class="fit-button">Fit Perceptron</button>
   </div>
+</div>
 
-  <h1>Linearly Unseparable Data</h1>
+<h1>Convergence Proof</h1>
 
-  <p>In the real world, data is never clean; it&#39;s noisy, and the linear separability assumption we made is basically never achieved. But, as we saw above, the size of the margin that separates the two classes is what allows the perceptron to converge at all. So the normal perceptron learning algorithm gives us no guarantees on how good it will perform on noisy data. </p>
+<p>While the above demo gives some good visual evidence that \(w\) always converges to a line which separates our points, there is also a formal proof that adds some useful insights. For the proof, we&#39;ll consider running our algorithm for \(k\) iterations and then show that \(k\) is upper bounded by a finite value, meaning that, in finite time, our algorithm will always return a \(w\) that can perfectly classify all points.</p>
 
-  <p>However, there are several modifications to the perceptron algorithm which enable it to do well, even when the data is not linearly separable. Below, we&#39;ll explore the Maxover algorithm and the Voted Perceptron.</p>
+<p>Before we begin, let&#39;s make our assumptions clear:</p>
 
-  <h1>Maxover Algorithm</h1>
+<ol>
+<li>There exists some optimal \(w^*\)  such that for some \(\epsilon &gt; 0\), \(y_i(w^* \cdot x_i) \ge \epsilon\) for all inputs on the training set. In other words, we assume the points are linearly separable with a margin of \(\epsilon\) (as long as our hyperplane is normalized). </li>
+<li>\(||w^*|| = 1\). Though not strictly necessary, this gives us a unique \(w^*\) and makes the proof simpler.</li>
+<li>For all \(x_i\) in our dataset \(X\), \(||x_i|| &lt; R\). In other words, this bounds the coordinates of our points by a hypersphere with radius equal to the farthest point from the origin in our dataset.</li>
+</ol>
 
-  <p>If the data are not linearly separable, it would be good if we could at least converge to a locally good solution. In 1995, Andreas Wendemuth introduced three modifications to the perceptron in <a href="docs/learning_the_unlearnable.pdf">Learning the Unlearnable</a>, all of which allow the algorithm to converge, even when the data is not linearly separable. </p>
+<h3>Inequality 1</h3>
 
-  <p>The main change is to the update rule. Instead of \(w_{i+1} = w_i + y_t(x_t)^T\), the update rule is changed to \(w_{i+1} = w_i + C(w_i, x^*)\cdot w_i + y^*(x^*)^T\), where \((x^*, y^*)\) refers to a specific data point (to be defined later) and \(C\) is a function of this point as well as the previous iteration&#39;s weights.</p>
+<p>First, let \(w^{k+1}\) be the vector of weights returned by our algorithm after running it for \(k+1\) iterations.</p>
 
-  <p>In this way, Wendemuth goes on to show that as long as \((x^*, y^*)\) and \(C\) are chosen to satisfy certain inequalities, this update rule will eventually converge. </p>
+<p>We&#39;ll start by showing that:</p>
 
-  <p>(See the paper for more details because I&#39;m also a little unclear on <em>exactly</em> how the math works out, but the main intuition is that as long as \(C(w_i, x^*)\cdot w_i + y^*(x^*)^T\) has both a bounded norm and a positive dot product with repect to \(w_i\), then norm of \(w\) will always increase with each update. Then, in the limit, as the norm of \(w\) grows, future updates (because they always add a bounded value) will not shift its direction very much, and it will eventually converge.)</p>
+<p>\(w_{k+1} \cdot (w^*)^T \ge w_k \cdot (w^*)^T + \epsilon\)</p>
 
-  <p>Each one of the modifications uses a different selection criteria for selecting \((x^*, y^*)\).</p>
-    
-  <p>One of the three algorithms in Wendemuth&#39;s paper defines \((x^*, y^*)_t\) to be a random point which satisfies the following inequality: \(\frac{y^*(w_t \cdot x^*)}{||w_t||} &lt; k\) </p>
+<p>By definition, if we assume that \(w_{k}\) misclassified \((x_t, y_t)\), we update \(w_{k+1} = w_k + y_t(x_t)^T \)</p>
 
-  <p>This is the version you can play with below. Note the value of \(k\) is a tweakable hyperparameter; I&#39;ve merely set it to default to -0.25 below because that&#39;s what worked well for me when I was playing around. The error rate is also displayed once the perceptron is done training. Given a noise proportion of \(p\), we&#39;d ideally like to get an error rate as close to \(p\) as possible.</p>
+<p>Thus:</p>
 
-  <p>(Recovering a hyperplane close to the true one is also desirable. There are going to be trade-offs both ways.)</p>
+<p>\(w_{k+1}\cdot (w^*)^T = (w_k + y_t(x_t)^T)\cdot (w^*)^T\) </p>
 
-  <div class = "graph">
-    <div id="scatterplot2"></div>
-    <div class="input-holder">
-      <input type="range" class="numPoints slider" min="10" max="150" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
-    </div>
-    <div class="input-holder">
-      <input type="range" class="noise slider" min="0" max="40" value="10"> <span class="input-value"></span><span> % noise</span>
-    </div>
-    <div class="input-holder">
-      <input type="range" class="k slider" min="-1" max="1" value="-0.25" step=".05"><span class="input-value"></span><span>&nbsp; \(k\)</span>
-    </div>
-    
-    <div class="button-holder">
-      <button id="generate2" class="generate-button">Generate Data</button>
-      <button id="fit2" class="fit-button">Fit Perceptron</button>
-    </div>
+<p>Next, multiplying out the right hand side, we get:</p>
+
+<p>\(w_{k+1}\cdot (w^*)^T = w_k \cdot (w^*)^T + y_t(w^* \cdot x_t)\)</p>
+
+<p>By assumption 1, we get, as desired:</p>
+
+<p>\(w_{k+1}\cdot (w^*)^T \ge w_k \cdot (w^*)^T + \epsilon\) </p>
+
+<p>Next, we&#39;ll prove by induction that:</p>
+
+<p>\(w^{k+1} \cdot (w^*)^T \ge k\epsilon \)</p>
+
+<p>Base case where \(k = 0\):</p>
+
+<p>\(w^{0+1} \cdot w^* = 0 \ge 0 * \epsilon = 0\)</p>
+
+<p>Inductive step where \(k \to k+1\):</p>
+
+<p>From what we proved above, we get:</p>
+
+<p>\(w^{k+1} \cdot (w^*)^T \ge w_k \cdot (w^*)^T + \epsilon\)</p>
+
+<p>Then, from the inductive hypothesis, we get:</p>
+
+<p>\(w^{k+1} \cdot (w^*)^T \ge (k-1)\epsilon + \epsilon\)</p>
+
+<p>Which gets us, as desired:</p>
+
+<p>\(w^{k+1} \cdot (w^*)^T \ge k\epsilon\)</p>
+
+<p>Next, we see that:</p>
+
+<p>\(w^{k+1} \cdot (w^*)^T = ||w^{k+1}|| * ||w^*||*cos(w^{k+1}, w^*)\)</p>
+
+<p>Because \(cos(x) \le 1\), we see that:</p>
+
+<p>\(w^{k+1} \cdot (w^*)^T \le ||w^{k+1}||*||w^*||\)</p>
+
+<p>Then, because \(||w^*|| = 1\) by assumption 2, we have that:</p>
+
+<p>\(||w^{k+1}|| \ge k\epsilon\)</p>
+
+<p>Because all values on both sides are positive, we also get:</p>
+
+<p>\(||w^{k+1}||^2 \ge k^2\epsilon^2\)</p>
+
+<h3>Inequality 2</h3>
+
+<p>First, we notice that:</p>
+
+<p>\(||w_{k+1}||^2 = ||w_{k} + y_t (x_t)^T||^2\)</p>
+
+<p>Multiplying this out, we get:</p>
+
+<p>\(||w_{k+1}||^2 = ||w_k||^2 + 2y_t (w_k \cdot x_t) + ||x_k||^2\)</p>
+
+<p>Then, because we updated on point \((x_t, y_t)\), we know that it was classified incorrectly. If a point was misclassified,  \(\hat{y_t} = -y_t\), which means \(2y_t(w_k \cdot x_t) &lt; 0\) because \(\text{sign}(w_k \cdot x_t) = \hat{y_t}\).</p>
+
+<p>Thus:</p>
+
+<p>\(||w_{k+1}||^2 \le ||w_k||^2 + ||x_k||^2\)</p>
+
+<p>Then, by assumption 3, we know that:</p>
+
+<p>\(R \ge ||x_k||\)</p>
+
+<p>Thus:</p>
+
+<p>\(||w_{k+1}||^2 \le ||w_k||^2 + R^2\)</p>
+
+<p>Now, we&#39;ll prove by induction that:</p>
+
+<p>\(||w_{k+1}||^2 \le kR^2\)</p>
+
+<p>Base case, where \(k=0\):</p>
+
+<p>\(||w_{0+1}||^2  = 0 \le 0*R^2 = 0\)</p>
+
+<p>Inductive step, where \(k \to k+1\):</p>
+
+<p>From what we proved above:</p>
+
+<p>\(||w_{k+1}||^2 \le ||w_k||^2 + R^2 \)</p>
+
+<p>Then, by the inductive hypothesis:</p>
+
+<p>\(||w_{k+1}||^2 \le (k-1)R^2 + R^2\)</p>
+
+<p>Which gets us, as desired:</p>
+
+<p>\(||w_{k+1}||^2 \le kR^2\)</p>
+
+<h3>Putting It Together</h3>
+
+<p>From Inequalities 1 and 2, we get:</p>
+
+<p>\(k^2\epsilon^2 \le ||w_{k+1}||^2 \le kR^2\)</p>
+
+<p>Dividing out, we get:</p>
+
+<p>\(k \le \frac{R^2}{\epsilon^2}\)</p>
+
+<p>Thus, we see that our algorithm will run for no more than \(\frac{R^2}{\epsilon^2}\) iterations. </p>
+
+<h3>Changing the Margin</h3>
+
+<p>It&#39;s interesting to note that our convergence proof does not explicity depend on the dimensionality of our data points or even the number of data points! </p>
+
+<p>Rather, the runtime depends on the size of the margin between the closest point and the separating hyperplane. In other words, the difficulty of the problem is bounded by how easily separable the two classes are. The larger the margin, the faster the perceptron should converge. </p>
+
+<p>Below, you can try adjusting the margin between the two classes to see how increasing or decreasing it changes how fast the perceptron converges.</p>
+
+<div class="graph">
+  <div id="scatterplot1"></div>
+  <div class="input-holder">
+    <input type="range" class="numPoints slider" min="10" max="150" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
+  </div>
+  <div class="input-holder">
+    <input class="margin slider" type="range" min="0" max="50" value="10"><span class="input-value"></span><span>% margin</span>
+  </div>
+  
+  <div class="button-holder">
+    <button id="generate1" class="generate-button">Generate Data</button>
+    <button id="fit1" class="fit-button">Fit Perceptron</button>
+  </div>
+</div>
+
+<h1>Linearly Unseparable Data</h1>
+
+<p>The default perceptron only works if the data is linearly separable.</p>
+
+<p>Of course, in the real world, data is never clean; it&#39;s noisy, and the linear separability assumption we made is basically never achieved; thus, we can make no assumptions about the minimum margin. But, as we saw above, the size of the margin that separates the two classes is what allows the perceptron to converge at all. This means the normal perceptron learning algorithm gives us no guarantees on how good it will perform on noisy data. </p>
+
+<p>However, all is not lost. There are several modifications to the perceptron algorithm which enable it to do relatively well, even when the data is not linearly separable. Below, we&#39;ll explore two of them: the Maxover Algorithm and the Voted Perceptron.</p>
+
+<h1>Maxover Algorithm</h1>
+
+<p>If the data are not linearly separable, it would be good if we could at least converge to a locally good solution. In 1995, Andreas Wendemuth introduced three modifications to the perceptron in <a href="docs/learning_the_unlearnable.pdf">Learning the Unlearnable</a>, all of which allow the algorithm to converge, even when the data is not linearly separable. </p>
+
+<p>The main change is to the update rule. Instead of \(w_{i+1} = w_i + y_t(x_t)^T\), the update rule becomes \(w_{i+1} = w_i + C(w_i, x^*)\cdot w_i + y^*(x^*)^T\), where \((x^*, y^*)\) refers to a specific data point (to be defined later) and \(C\) is a function of this point and the previous iteration&#39;s weights.</p>
+
+<p>Wendemuth goes on to show that as long as \((x^*, y^*)\) and \(C\) are chosen to satisfy certain inequalities, this new update rule will allow \(w\) to eventually converge to a solution with desirable properties.</p>
+
+<p>(See the paper for more details because I&#39;m also a little unclear on <em>exactly</em> how the math works out, but the main intuition is that as long as \(C(w_i, x^*)\cdot w_i + y^*(x^*)^T\) has both a bounded norm and a positive dot product with repect to \(w_i\), then norm of \(w\) will always increase with each update. Then, in the limit, as the norm of \(w\) grows, further updates, due to their bounded norm, will not shift the direction of \(w\) very much, which leads to convergence.)</p>
+
+<p>Each one of the modifications uses a different selection criteria for selecting \((x^*, y^*)\), which leads to different desirable properties. </p>
+
+<p>One of the three algorithms in Wendemuth&#39;s paper uses the criteria where after \(t\) iterations, \((x^*, y^*)_t\) is defined to be a random point which satisfies the following inequality:</p>
+
+<p>\(\frac{y^*(w_t \cdot x^*)}{||w_t||} &lt; k\) </p>
+
+<p>This is the version you can play with below. </p>
+
+<p>(After implementing and testing out all three, I picked this one because it seemed the most robust, even though another of Wendemuth&#39;s algorithms could have theoretically done better. Also, confusingly, though Wikipedia refers to the algorithms in Wendemuth&#39;s paper as the Maxover algorithm(s), the term never appears in the paper itself. For curious readers who want to dive into the details, the perceptron below is &quot;Algorithm 2: Robust perception [sic]&quot;. Code for this algorithm as well as the other two are found in the GitHub repo linked at the end in Closing Thoughts.)</p>
+
+<p>Note the value of \(k\) is a tweakable hyperparameter; I&#39;ve merely set it to default to -0.25 below because that&#39;s what worked well for me when I was playing around. Also, note the error rate. Given a noise proportion of \(p\), we&#39;d ideally like to get an error rate as close to \(p\) as possible. I&#39;ve found that this perceptron well in this regard.</p>
+
+<div class = "graph">
+  <div id="scatterplot2"></div>
+  <div class="input-holder">
+    <input type="range" class="numPoints slider" min="10" max="150" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
+  </div>
+  <div class="input-holder">
+    <input type="range" class="noise slider" min="0" max="40" value="10"> <span class="input-value"></span><span> % noise</span>
+  </div>
+  <div class="input-holder">
+    <input type="range" class="k slider" min="-1" max="1" value="-0.25" step=".05"><span class="input-value"></span><span>&nbsp; \(k\)</span>
+  </div>
+  <div class="button-holder">
+    <button id="generate2" class="generate-button">Generate Data</button>
+    <button id="fit2" class="fit-button">Fit Perceptron</button>
+  </div>
+</div>  
+
+<h1>Voted Perceptron</h1>
+
+<p>Alternatively, if the data are not linearly separable, perhaps we could get better performance using an ensemble of linear classifiers. This is what Yoav Freund and Robert Schapire accomplish in 1999&#39;s <a href="docs/voted_perceptron.pdf">Large Margin Classification Using the Perceptron Algorithm</a>. </p>
+
+<p>(If you are familiar with their other work on <a href="https://en.wikipedia.org/wiki/Boosting_%28machine_learning%29">boosting</a>, their ensemble algorithm here is unsurprising.)</p>
+
+<p>There are two main changes to the perceptron algorithm:</p>
+
+<ol>
+<li>When we update our weights \(w_t\), we store it in a list \(W\), along with a vote value \(c_t\), which represents how many data points \(w_t\) classified correctly before it got something wrong (and thus had to be updated). </li>
+<li>At test time, our prediction for a data point \(x_i\) is the majority vote of all the weights in our list \(W\), weighted by their vote. In other words, \(\hat{y_i} = \text{sign}(\sum_{w_j \in W} c_j(w \cdot x_i))\)</li>
+</ol>
+
+<p>Though it&#39;s both intuitive and easy to implement, the analyses for the Voted Perceptron do not extend past running it just once through the training set. However, we empirically see that performance continues to improve if we make multiple passes through the training set and thus extend the length of \(W\). </p>
+
+<p>The authors themselves have this to say about such behavior:</p>
+
+<blockquote>
+<p>As we shall see in the experiments, the [Voted Perceptron] algorithm actually continues to improve performance after &thinsp; \(T = 1\). We have no theoretical explanation for this improvement.</p>
+</blockquote>
+
+<p>:P</p>
+
+<p>Below, you can see this for yourself by changing the number of iterations the Voted Perceptron runs for, and then seeing the resulting error rate. </p>
+
+<p>During the training animation, each hyperplane in \(W\) is overlaid on the graph, with an intensity proportional to its vote. You can also hover a specific hyperplane to see the number of votes it got. Typically, the points with high vote are the ones which are close to the original line; with minimal noise, we&#39;d expect something close to the original separating hyperplane to get most of the points correct. </p>
+
+<p>The final error rate is the majority vote of all the weights in \(W\), and it also tends to be pretty close to the noise rate.</p>
+
+<div class = "graph">
+  <div id="scatterplot3"></div>
+  <div class="input-holder">
+    <input type="range" class="numPoints slider" min="10" max="150" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
+  </div>
+  <div class="input-holder">
+    <input type="range" class="noise slider" min="0" max="40" value="10"> <span class="input-value"></span><span> % noise</span>
+  </div>
+  <div class="input-holder">
+    <input type="range" class="iters slider" min="1" max="10" value="5"> <span class="input-value"></span><span>&nbsp; iterations</span>
+  </div>
+  <div class="button-holder">
+    <button id="generate3" class="generate-button">Generate Data</button>
+    <button id="fit3" class="fit-button">Fit Perceptron</button>
   </div>  
+</div>  
 
-  <h1>Voted Perceptron</h1>
+<h1>Closing Thoughts</h1>
 
-  <p>Alternatively, if the data are not linearly separable, perhaps we could get better performance using an ensemble of linear classifiers. This is what Yoav Freund and Robert Schapire accomplish in 1999&#39;s <a href="docs/voted_perceptron.pdf">Large Margin Classification Using the Perceptron Algorithm</a>. (Unsurprising, if you're aware of their work in boosting.)</p>
+<p>This is far from a complete overview, but I think it does what I wanted it to do. There&#39;s an entire family of maximum-margin perceptrons that I skipped over, but I feel like that&#39;s not as interesting as the noise-tolerant case. Furthermore, SVMs seem like the more natural place to introduce the concept. Similarly, perceptrons can also be adapted to use kernel functions, but I once again feel like that&#39;d be too much to cram into one post.</p>
 
-  <p>There are two main changes to the perceptron algorithm. The first is that, during each iteration when we update our weights \(w_t\), we store it in a list \(W\), along with a vote value \(c_t\), which represents how many data points \(w_t\) classified correctly before it got something wrong (and thus had to be updated). Then, at test time, our prediction for a data point \(x_i\) is the majority vote of all the weights in our list, weighted by their vote. </p>
+<p>For now, I think this project is basically done. If I have more slack, I might work on some geometric figures which give a better intuition for the perceptron convergence proof, but the algebra by itself will have to suffice for now.</p>
 
-  <p>In other words, \(\hat{y_i} = \text{sign}(\sum_{w_j \in W} c_j(w \cdot x_i))\)</p>
+<p>It was very difficult to find information on the Maxover algorithm in particular, as almost every source on the internet blatantly plagiarized the description from Wikipedia. Shoutout to <a href="https://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=9A04C68C8BB3A1D1A198A1C485BEE204?doi=10.1.1.31.5679&amp;rep=rep1&amp;type=pdf">Constructive Learning Techniques for Designing Neural Network Systems by Colin Campbell</a> and <a href="https://pdfs.semanticscholar.org/5bad/0509f3cae1c78514a839e8b6934cf7ebc6ee.pdf">Statistical Mechanics of Neural Networks by William Whyte</a> for providing succinct summaries that helped me in decoding Wendemuth&#39;s abstruse descriptions.</p>
 
-  <p>Though it&#39;s both intuitive and easy to implement, the analyses for the Voted Perceptron do not extend past running it just once through the training set. However, we empirically see that performance continues to improve if we make multiple passes through the training set and thus extend the length of \(W\). </p>
+<p>On that note, I&#39;m excited that all of the code for this project is available on <a href="https://github.com/owenshen24/perceptron">GitHub</a>. To my knowledge, this is the first time that anyone has made available a working implementation of the Maxover algorithm. Uh…not that I expect anyone to actually use it, seeing as no one uses perceptrons for anything except academic purposes these days. But hopefully this shows up the next time someone tries to look up information about this algorithm, and they won&#39;t need to spend several weeks trying to understand Wendemuth.</p>
 
-  <p>Below, you can see this for yourself by changing the number of iterations the Voted Perceptron runs for, and then seeing the resulting error rate.</p>
+<p>In the best case, I hope this becomes a useful pedagogical part to future introductory machine learning classes, which can give students some more visual evidence for why and how the perceptron works.</p>
 
-  <div class = "graph">
-    <div id="scatterplot3"></div>
+<h3>Credits</h3>
 
-    <div class="input-holder">
-      <input type="range" class="numPoints slider" min="10" max="150" value="50"> <span class="input-value"></span><span>&nbsp; points</span>
-    </div>
-    <div class="input-holder">
-      <input type="range" class="noise slider" min="0" max="40" value="10"> <span class="input-value"></span><span> % noise</span>
-    </div>
-    <div class="input-holder">
-      <input type="range" class="iters slider" min="1" max="10" value="5"> <span class="input-value"></span><span>&nbsp; iterations</span>
-    </div>
+<p>The charts were made with d3 and jQuery.</p>
 
-    <div class="button-holder">
-      <button id="generate3" class="generate-button">Generate Data</button>
-      <button id="fit3" class="fit-button">Fit Perceptron</button>
-    </div>  
-  </div>  
+<p>The CSS was inspired by the colors found on on <a href="https://www.julian.com/">julian.com</a>, which is one of the most aesthetic sites I&#39;ve seen in a while.</p>
+  
+<p>The main font is Muli from Google Fonts.</p>
 
 </body>
 </html>
-
