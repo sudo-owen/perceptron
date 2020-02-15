@@ -164,6 +164,7 @@ button:hover {
 .animationSpeed {
   margin-right: 1rem;
   margin-bottom: -0.35rem;
+  direction: rtl;
 }
 
 .speedLabel {
