@@ -104,115 +104,115 @@
 
 <p>We&#39;ll start by showing that:</p>
 
-<p>\(w_{k+1} \cdot (w^*)^T \ge w_k \cdot (w^*)^T + \epsilon\)</p>
+<p>\[w_{k+1} \cdot (w^*)^T \ge w_k \cdot (w^*)^T + \epsilon\]</p>
 
 <p>By definition, if we assume that \(w_{k}\) misclassified \((x_t, y_t)\), we update \(w_{k+1} = w_k + y_t(x_t)^T \)</p>
 
 <p>Thus:</p>
 
-<p>\(w_{k+1}\cdot (w^*)^T = (w_k + y_t(x_t)^T)\cdot (w^*)^T\) </p>
+<p>\[w_{k+1}\cdot (w^*)^T = (w_k + y_t(x_t)^T)\cdot (w^*)^T\]</p>
 
 <p>Next, multiplying out the right hand side, we get:</p>
 
-<p>\(w_{k+1}\cdot (w^*)^T = w_k \cdot (w^*)^T + y_t(w^* \cdot x_t)\)</p>
+<p>\[w_{k+1}\cdot (w^*)^T = w_k \cdot (w^*)^T + y_t(w^* \cdot x_t)\]</p>
 
 <p>By assumption 1, we get, as desired:</p>
 
-<p>\(w_{k+1}\cdot (w^*)^T \ge w_k \cdot (w^*)^T + \epsilon\) </p>
+<p>\[w_{k+1}\cdot (w^*)^T \ge w_k \cdot (w^*)^T + \epsilon\]</p>
 
 <p>Next, we&#39;ll prove by induction that:</p>
 
-<p>\(w^{k+1} \cdot (w^*)^T \ge k\epsilon \)</p>
+<p>\[w^{k+1} \cdot (w^*)^T \ge k\epsilon \]</p>
 
 <p>Base case where \(k = 0\):</p>
 
-<p>\(w^{0+1} \cdot w^* = 0 \ge 0 * \epsilon = 0\)</p>
+<p>\[w^{0+1} \cdot w^* = 0 \ge 0 * \epsilon = 0\]</p>
 
 <p>Inductive step where \(k \to k+1\):</p>
 
 <p>From what we proved above, we get:</p>
 
-<p>\(w^{k+1} \cdot (w^*)^T \ge w_k \cdot (w^*)^T + \epsilon\)</p>
+<p>\[w^{k+1} \cdot (w^*)^T \ge w_k \cdot (w^*)^T + \epsilon\]</p>
 
 <p>Then, from the inductive hypothesis, we get:</p>
 
-<p>\(w^{k+1} \cdot (w^*)^T \ge (k-1)\epsilon + \epsilon\)</p>
+<p>\[w^{k+1} \cdot (w^*)^T \ge (k-1)\epsilon + \epsilon\]</p>
 
 <p>Which gets us, as desired:</p>
 
-<p>\(w^{k+1} \cdot (w^*)^T \ge k\epsilon\)</p>
+<p>\[w^{k+1} \cdot (w^*)^T \ge k\epsilon\]</p>
 
 <p>Next, we see that:</p>
 
-<p>\(w^{k+1} \cdot (w^*)^T = ||w^{k+1}|| * ||w^*||*cos(w^{k+1}, w^*)\)</p>
+<p>\[w^{k+1} \cdot (w^*)^T = ||w^{k+1}|| * ||w^*||*cos(w^{k+1}, w^*)\]</p>
 
 <p>Because \(cos(x) \le 1\), we see that:</p>
 
-<p>\(w^{k+1} \cdot (w^*)^T \le ||w^{k+1}||*||w^*||\)</p>
+<p>\[w^{k+1} \cdot (w^*)^T \le ||w^{k+1}||*||w^*||\]</p>
 
 <p>Then, because \(||w^*|| = 1\) by assumption 2, we have that:</p>
 
-<p>\(||w^{k+1}|| \ge k\epsilon\)</p>
+<p>\[||w^{k+1}|| \ge k\epsilon\]</p>
 
 <p>Because all values on both sides are positive, we also get:</p>
 
-<p>\(||w^{k+1}||^2 \ge k^2\epsilon^2\)</p>
+<p>\[||w^{k+1}||^2 \ge k^2\epsilon^2\]</p>
 
 <h3>Inequality 2</h3>
 
 <p>First, we notice that:</p>
 
-<p>\(||w_{k+1}||^2 = ||w_{k} + y_t (x_t)^T||^2\)</p>
+<p>\[||w_{k+1}||^2 = ||w_{k} + y_t (x_t)^T||^2\]</p>
 
 <p>Multiplying this out, we get:</p>
 
-<p>\(||w_{k+1}||^2 = ||w_k||^2 + 2y_t (w_k \cdot x_t) + ||x_k||^2\)</p>
+<p>\[||w_{k+1}||^2 = ||w_k||^2 + 2y_t (w_k \cdot x_t) + ||x_k||^2\]</p>
 
 <p>Then, because we updated on point \((x_t, y_t)\), we know that it was classified incorrectly. If a point was misclassified,  \(\hat{y_t} = -y_t\), which means \(2y_t(w_k \cdot x_t) &lt; 0\) because \(\text{sign}(w_k \cdot x_t) = \hat{y_t}\).</p>
 
 <p>Thus:</p>
 
-<p>\(||w_{k+1}||^2 \le ||w_k||^2 + ||x_k||^2\)</p>
+<p>\[||w_{k+1}||^2 \le ||w_k||^2 + ||x_k||^2\]</p>
 
 <p>Then, by assumption 3, we know that:</p>
 
-<p>\(R \ge ||x_k||\)</p>
+<p>\[R \ge ||x_k||\]</p>
 
 <p>Thus:</p>
 
-<p>\(||w_{k+1}||^2 \le ||w_k||^2 + R^2\)</p>
+<p>\[||w_{k+1}||^2 \le ||w_k||^2 + R^2\]</p>
 
 <p>Now, we&#39;ll prove by induction that:</p>
 
-<p>\(||w_{k+1}||^2 \le kR^2\)</p>
+<p>\[||w_{k+1}||^2 \le kR^2\]</p>
 
 <p>Base case, where \(k=0\):</p>
 
-<p>\(||w_{0+1}||^2  = 0 \le 0*R^2 = 0\)</p>
+<p>\[||w_{0+1}||^2  = 0 \le 0*R^2 = 0\]</p>
 
 <p>Inductive step, where \(k \to k+1\):</p>
 
 <p>From what we proved above:</p>
 
-<p>\(||w_{k+1}||^2 \le ||w_k||^2 + R^2 \)</p>
+<p>\[||w_{k+1}||^2 \le ||w_k||^2 + R^2 \]</p>
 
 <p>Then, by the inductive hypothesis:</p>
 
-<p>\(||w_{k+1}||^2 \le (k-1)R^2 + R^2\)</p>
+<p>\[||w_{k+1}||^2 \le (k-1)R^2 + R^2\]</p>
 
 <p>Which gets us, as desired:</p>
 
-<p>\(||w_{k+1}||^2 \le kR^2\)</p>
+<p>\[||w_{k+1}||^2 \le kR^2\]</p>
 
 <h3>Putting It Together</h3>
 
 <p>From Inequalities 1 and 2, we get:</p>
 
-<p>\(k^2\epsilon^2 \le ||w_{k+1}||^2 \le kR^2\)</p>
+<p>\[k^2\epsilon^2 \le ||w_{k+1}||^2 \le kR^2\]</p>
 
 <p>Dividing out, we get:</p>
 
-<p>\(k \le \frac{R^2}{\epsilon^2}\)</p>
+<p>\[k \le \frac{R^2}{\epsilon^2}\]</p>
 
 <p>Thus, we see that our algorithm will run for no more than \(\frac{R^2}{\epsilon^2}\) iterations. </p>
 
@@ -261,7 +261,7 @@
 
 <p>One of the three algorithms in Wendemuth&#39;s paper uses the criteria where after \(t\) iterations, \((x^*, y^*)_t\) is defined to be a random point which satisfies the following inequality:</p>
 
-<p>\(\frac{y^*(w_t \cdot x^*)}{||w_t||} &lt; k\) </p>
+<p>\[\frac{y^*(w_t \cdot x^*)}{||w_t||} &lt; k\]</p>
 
 <p>This is the version you can play with below. </p>
 
