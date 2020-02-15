@@ -24,7 +24,7 @@ h3 {
 }
 
 .topHeading {
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
 
 ol {
@@ -175,6 +175,7 @@ button:hover {
   background-color: #ecf6ff;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
+  padding-bottom: 0.25rem;
 }
 
 blockquote {
